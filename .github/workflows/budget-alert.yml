@@ -1,0 +1,58 @@
+name: Budget check (daily)
+
+"on":
+  schedule:
+    - cron: "0 6 * * *"   # tous les jours 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write   # WIF Google
+
+jobs:
+  budget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth GCP via Workload Identity Federation
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Prepare env
+        run: |
+          echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
+          echo "GCP_REGION=europe-west9"                    >> $GITHUB_ENV
+          echo "GCP_BILLING_ACCOUNT=${{ secrets.GCP_BILLING_ACCOUNT }}" >> $GITHUB_ENV
+
+      - name: Run budget-check.sh
+        run: |
+          chmod +x tools/budget-check.sh
+          bash tools/budget-check.sh | tee budget-report.txt
+
+      - name: Detect orphans
+        run: |
+          chmod +x tools/cleanup-orphans.sh
+          bash tools/cleanup-orphans.sh --dry-run | tee orphans-report.txt
+
+      - name: Fail if orphans found
+        run: |
+          # Considère qu'un cluster ou une IP orpheline = échec (déclenche notification GitHub)
+          grep -qE "^\s+⚠️" orphans-report.txt && exit 1 || exit 0
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: budget-reports-${{ github.run_id }}
+          path: |
+            budget-report.txt
+            orphans-report.txt
+          retention-days: 90

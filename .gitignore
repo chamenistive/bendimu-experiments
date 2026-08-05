@@ -1,0 +1,65 @@
+# Secrets — NE JAMAIS COMMIT
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*-key.json
+service-account*.json
+credentials*.json
+kubeconfig
+*.kubeconfig
+
+# Terraform
+**/.terraform/
+**/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+tfplan
+tfplan.*
+
+# Résultats bruts volumineux (garder JSON traités uniquement)
+**/results/raw/
+**/results/*.pcap
+**/results/*.log.gz
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+
+# Node (si scripts JS)
+node_modules/
+
+# Go build artifacts
+tls-server/tls-server
+tls-server/*.exe
+
+# Divers
+tmp/
+*.tmp
+*.bak

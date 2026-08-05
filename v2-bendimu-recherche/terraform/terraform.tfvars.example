@@ -1,0 +1,10 @@
+project_id             = "bendimu-mesh-bench"
+region                 = "europe-west9"
+primary_zone           = "europe-west9-a"
+cluster_name           = "bendimu-v2"
+k8s_version            = "1.30.5-gke.1355000"
+network_name           = "bendimu-vpc"
+subnetwork_name        = "bendimu-subnet-europe-west9"
+node_sa_email          = "bendimu-gke-nodes@bendimu-mesh-bench.iam.gserviceaccount.com"
+enable_external_sut    = true   # pour Bank of Anthos + OBP
+enable_a8_multi_region = false  # true UNIQUEMENT lors du run A8 (coût élevé)

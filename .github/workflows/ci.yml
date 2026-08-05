@@ -1,0 +1,80 @@
+name: CI — Lint & Validate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  terraform-lint:
+    name: Terraform fmt + validate + tflint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init (backends locaux pour validate)
+        run: |
+          for dir in bootstrap v0-bremler/terraform v1-bendimu/terraform v2-bendimu-recherche/terraform; do
+            (cd "$dir" && terraform init -backend=false)
+          done
+
+      - name: Terraform validate
+        run: |
+          for dir in bootstrap v0-bremler/terraform v1-bendimu/terraform v2-bendimu-recherche/terraform; do
+            (cd "$dir" && terraform validate)
+          done
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: TFLint
+        run: |
+          tflint --init
+          tflint --recursive
+
+  tfsec:
+    name: TFSec security scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aquasecurity/tfsec-action@v1.0.3
+
+  yaml-lint:
+    name: YAML lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: karancode/yamllint-github-action@v3.0.0
+        with:
+          yamllint_strict: false
+
+  shell-lint:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: './'
+          format: 'gcc'
+          severity: 'warning'
+
+  detect-secrets:
+    name: Détection secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install detect-secrets
+      - run: detect-secrets scan --baseline .secrets.baseline || true
