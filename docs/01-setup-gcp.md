@@ -116,7 +116,7 @@ Le protocole Bendimu exige :
 | Quota | Valeur minimum | Défaut GCP | Action si insuffisant |
 |---|---|---|---|
 | `CPUS` (region europe-west1) | 40 | 24 | Demande via Console → IAM & Admin → Quotas |
-| `SSD_TOTAL_GB` (region) | 1 000 | 500 | Même chemin |
+| `SSD_TOTAL_GB` (region) | 500 | 500 | OK Free-Trial-upgraded (450 GB requis, marge 50) |
 | `IN_USE_ADDRESSES` (region) | 5 | 8 | OK par défaut |
 | `NETWORKS` (global) | 5 | 5 | OK |
 | `FIREWALLS` (global) | 100 | 100 | OK |
@@ -214,11 +214,11 @@ gcloud storage buckets update "gs://${TFSTATE_BUCKET}" \
 Le module Terraform `shared/modules/budget-alerts/` créera ces alertes automatiquement, mais on peut aussi les créer maintenant via `gcloud` pour être protégé dès la première commande :
 
 ```bash
-export BUDGET_AMOUNT=800
+export BUDGET_AMOUNT=300
 
 gcloud billing budgets create \
   --billing-account="$BILLING_ACCOUNT_ID" \
-  --display-name="Bendimu 800 USD/mois" \
+  --display-name="Bendimu 300 USD (crédit UY1)" \
   --budget-amount="${BUDGET_AMOUNT}USD" \
   --threshold-rule=percent=0.5 \
   --threshold-rule=percent=0.9 \
@@ -226,7 +226,7 @@ gcloud billing budgets create \
   --filter-projects="projects/$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')"
 ```
 
-**Fallback Console** si CLI échoue : Console → Billing → Budgets & alerts → Create budget → 800 USD → 50/90/100 % → email destinataire = `stive.chameni@facsciences-uy1.cm`.
+**Fallback Console** si CLI échoue : Console → Billing → Budgets & alerts → Create budget → 300 USD → 50/90/100 % → email destinataire = `stive.chameni@facsciences-uy1.cm`.
 
 ---
 
@@ -237,27 +237,20 @@ cd ~/Desktop/bendimu-experiments
 cp .env.example .env
 ```
 
-Éditer `.env` :
+Éditer `.env` (variables clés à remplir — voir [.env.example](../.env.example) pour la liste complète) :
 
 ```bash
-# GCP
-export PROJECT_ID="bendimu-mesh-bench"
-export REGION="europe-west1"
-export ZONE="europe-west1-b"
-export BILLING_ACCOUNT_ID="01ABCD-234567-EFGH89"
-export SA_EMAIL="terraform-bendimu@bendimu-mesh-bench.iam.gserviceaccount.com"
-export TFSTATE_BUCKET="bendimu-tfstate-bendimu-mesh-bench"
-export GCP_ACCOUNT="stive.chameni@facsciences-uy1.cm"     # compte académique avec crédits GCP
-export OPERATOR_EMAIL="stive.chameni@facsciences-uy1.cm"  # destinataire alertes budget
-export PERSONAL_EMAIL="nazaclems@gmail.com"               # compte perso (non utilisé côté GCP)
-
-# Bendimu
-export CAMPAIGN_ID="v1-baseline"
-export AUTO_SHUTDOWN_HOUR=22
-export BUDGET_HARD_CAP=800
-
-# GitHub (pour WIF Actions plus tard)
-export GITHUB_ORG="<TON-USER>"
+export GCP_PROJECT_ID="bendimu-mesh-bench"
+export GCP_PROJECT_NUMBER="<gcloud projects describe … --format='value(projectNumber)'>"
+export GCP_BILLING_ACCOUNT="<gcloud billing accounts list>"
+export GCP_REGION="europe-west1"
+export GCP_ZONE="europe-west1-b"
+export GCP_ACCOUNT="stive.chameni@facsciences-uy1.cm"
+export GCP_SERVICE_ACCOUNT_EMAIL="terraform-bendimu@bendimu-mesh-bench.iam.gserviceaccount.com"
+export TF_BACKEND_BUCKET="bendimu-tfstate-bendimu-mesh-bench"
+export BUDGET_TOTAL_USD="300"
+export BUDGET_ALERT_EMAIL="stive.chameni@facsciences-uy1.cm"
+export GITHUB_ORG="chamenistive"
 export GITHUB_REPO="bendimu-experiments"
 ```
 
@@ -310,7 +303,7 @@ Ajouter dans GitHub → Settings → Secrets :
 - [ ] `gcloud storage buckets list | grep bendimu-tfstate` retourne 1 ligne
 - [ ] Budget visible dans Console → Billing → Budgets
 - [ ] `.env` créé et sourcé (`echo $PROJECT_ID` répond)
-- [ ] Quotas CPUS ≥ 40, SSD_TOTAL_GB ≥ 1000 (ou demande envoyée)
+- [ ] Quotas CPUS ≥ 40, SSD_TOTAL_GB ≥ 500 (ou demande envoyée)
 - [ ] WIF configuré + secrets GitHub renseignés
 
 ---

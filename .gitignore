@@ -27,6 +27,7 @@ override.tf.json
 terraform.rc
 tfplan
 tfplan.*
+*.plan
 
 # Résultats bruts volumineux (garder JSON traités uniquement)
 **/results/raw/
