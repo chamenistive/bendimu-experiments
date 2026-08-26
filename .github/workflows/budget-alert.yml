@@ -29,7 +29,7 @@ jobs:
       - name: Prepare env
         run: |
           echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
-          echo "GCP_REGION=europe-west9"                    >> $GITHUB_ENV
+          echo "GCP_REGION=europe-west1"                    >> $GITHUB_ENV
           echo "GCP_BILLING_ACCOUNT=${{ secrets.GCP_BILLING_ACCOUNT }}" >> $GITHUB_ENV
 
       - name: Run budget-check.sh

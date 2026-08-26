@@ -1,8 +1,8 @@
 project_id         = "bendimu-mesh-bench"
 project_number     = "123456789012"
 billing_account_id = "XXXXXX-XXXXXX-XXXXXX"
-region             = "europe-west9"
-zone               = "europe-west9-a"
+region             = "europe-west1"
+zone               = "europe-west1-b"
 alert_email        = "stive.chameni@facsciences-uy1.cm"
 budget_amount_usd  = 300
 budget_thresholds  = [50, 80, 95, 100]

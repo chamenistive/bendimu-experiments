@@ -150,11 +150,11 @@ chmod +x ~/check-prereqs.sh && ~/check-prereqs.sh
 
 - **RAM** : 8 GB (kubectl + istioctl + docker + IDE)
 - **Disque** : 20 GB libres (images Docker + résultats JSON + logs)
-- **Réseau** : latence stable vers `europe-west9.googleapis.com`
+- **Réseau** : latence stable vers `europe-west1.googleapis.com`
 
 Test réseau :
 ```bash
-ping -c 5 europe-west9-a-c.gce-atlantic.googleapis.com
+ping -c 5 europe-west1-b-c.gce-atlantic.googleapis.com
 # Latence attendue depuis France/Europe : < 40 ms ; depuis Afrique de l'Ouest : 60–120 ms
 ```
 

@@ -9,7 +9,7 @@
 **Coût estimé :** **25-30 USD** avec Ambient et 3 runs par mesh (rigueur stat). Sans Ambient : 18-22 USD.
 
 **Décomposition** :
-- Compute (7 × `n2-standard-4` + 1 × `n2-standard-2` obs + 800 GB PD SSD + fee cluster GKE) ≈ 1.68 USD/h × 11 h = **18.5 USD**
+- Compute (7 × `n2-standard-4` + 450 GB PD-SSD 70/50 GB par node + fee cluster GKE) ≈ 1.56 USD/h × 11 h = **17.2 USD**
 - GMP ingestion (Cilium metrics + Envoy `stats_prometheus` sur 11 h) ≈ **4 USD**
 - LB forwarding + Cloud NAT + Logging résiduel ≈ 1 USD
 - Marge re-runs (30 %) déjà incluse dans les 11 h.

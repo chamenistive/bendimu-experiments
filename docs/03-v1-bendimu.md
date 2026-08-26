@@ -197,22 +197,34 @@ Tout écart > 5 ms sur ces cibles indique un problème de dimensionnement (conte
 
 ---
 
-### 4.6 T4 — Stress convergent (les deux mesh, 3×12800 RPS)
+### 4.6 T4 — Stress convergent SÉQUENTIEL (T4a Istio → T4b Cilium, même cluster)
 
 ```bash
 ./scripts/05-t4-stress.sh
 ```
 
-Étapes :
-1. Provisionne un **second cluster** `bendimu-v1-stress` avec Cilium seul (pas d'Istio) pour test parallèle
-2. Sur cluster principal (Istio) : lance run 3× charge nominale = **38 400 RPS agrégé** (attention : dépasse largement Bremler pour caractériser point de rupture)
-3. Sur cluster stress : même charge sur Cilium
-4. Résultats : `results/t4-stress/`
-5. Capture : latence, taux erreur 5xx, CPU node (via GMP), OOM events
-6. Objectif : identifier point de saturation de chaque dataplane sous charge PSD2 réaliste
-7. Tag git : `v1-t4-ok`
+**Séquentiel et non parallèle** — conforme méthodologie Bremler-Barr 2024 (§4 : uninstall/reinstall même cluster).
 
-**Coût T4 :** ~8 USD (2 clusters × 1 h). Peut être **skippé** si budget serré, il n'est pas requis pour la démonstration H1/H2 (fait par T2 + T3).
+Étapes :
+1. **T4a — Stress Istio** : cluster déjà en état T2, charge 3× nominale = **38 400 RPS agrégé** (3 paliers : 12800, 25600, 38400), 3 min par palier
+2. Uninstall Istio complet (`istioctl uninstall --purge`) + rollout SUT + vérif zéro sidecar résiduel
+3. **Idle 5 min** — clear cache kernel, stabilisation
+4. Install Cilium OSS 1.16.3 + mutual auth sur le **même cluster**
+5. **Idle 5 min** — warmup eBPF maps
+6. **T4b — Stress Cilium** : même palier de charge (12800, 25600, 38400)
+7. Résultats : `results/t4a-stress-istio/` et `results/t4b-stress-cilium/`
+8. Tags git : `v1-t4a-ok`, `v1-t4b-ok`, `v1-t4-ok`
+
+**Avantages séquentiel vs parallèle 2 clusters** :
+- Fidélité littérature Bremler-Barr 2024 (approche officielle du paper)
+- Élimine variance hardware/zone GCP inter-cluster (même nodes, même NIC, même kernel scheduler)
+- Reproductibilité renforcée
+- Coût divisé par 2 (~4 USD au lieu de ~8 USD)
+- Consommation quota SSD divisée par 2 (450 GB au lieu de 900 GB) → passe sous quota Free-Trial-upgraded
+
+**Durée T4** : ~90 min (T4a 30 min + transition 15 min + T4b 30 min + tag).
+
+**Coût T4** : ~4 USD. Peut être **skippé** si budget serré, non requis pour H1/H2 (T2 + T3 suffisent).
 
 ---
 

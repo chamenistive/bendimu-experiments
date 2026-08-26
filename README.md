@@ -106,33 +106,40 @@ Détails complets : [docs/](docs/).
 
 ## Budget GCP
 
-Crédit prévu : **300 USD** (compte académique UY1 `stive.chameni@facsciences-uy1.cm`).
+Crédit disponible : **300 USD** (compte académique UY1 `stive.chameni@facsciences-uy1.cm`).
 
-**Estimation honnête campagne complète (avec 3 runs par mesh, re-runs sur échecs 30 %)** :
+**Estimation post-optimisation** (T4 séquentiel, disques 70/50 GB, région `europe-west1`, 3 runs par mesh, re-runs 30 %) :
 
 | Version | Compute | GMP | Autres | **Total** |
 |---|---|---|---|---|
-| V0 (avec Ambient, 11 h) | 18.5 | 4 | 1 | **25-30 USD** |
-| V1 (avec T4, 15-16 h) | 26-28 | 8-12 | 1-5 | **40-55 USD** |
-| V2 (22 h, 9 amendements + Anthos) | 38-43 | 15-25 | 5-10 | **65-100 USD** |
-| Bootstrap + idle inter-campagnes | | | | 5-10 USD |
-| **Total 1ère pass** | | | | **135-195 USD** |
-| **+ Re-run intégral si échec méthodo** | | | | **+40-60 USD** |
-| **Total prudent (à budgétiser)** | | | | **175-255 USD** |
+| V0 (avec Ambient, 11 h) | 17.2 | 4 | 1 | **~22 USD** |
+| V1 (avec T4 séquentiel, 16 h) | 25.5 | 8-12 | 2-4 | **35-42 USD** |
+| V2 (22 h, 9 amendements + Anthos) | 35 | 15-25 | 5-10 | **55-70 USD** |
+| Bootstrap + idle inter-campagnes | | | | 3-5 USD |
+| **Total 1ère pass** | | | | **115-140 USD** |
+| **+ Re-runs sur échecs (30 %)** | | | | **+35-45 USD** |
+| **Total prudent (à budgétiser)** | | | | **150-185 USD** |
 
-Marge sur les 300 USD : **~50-125 USD**. Confortable pour la campagne standard, **insuffisant** si on active :
-- Multi-region cross-cluster (V2 étendu) : +30-50 USD
-- Runs statistiques > 3 par mesh (n=5 recommandé articles) : +30 % sur V0/V1
-- Sauvegardes GMP long terme (rétention 24 mois par défaut) : ~5-15 USD/mois post-campagne
+Marge sur 300 USD crédit : **115-150 USD confortables**.
 
-**Poste critique caché** : GMP ingestion sur V2 (cardinality × 9 amendements). Sans `Telemetry` API drop labels côté Istio, peut grimper à 25 USD sur V2 seul.
+**Gains vs estimation initiale** :
+- T4 séquentiel (1 cluster au lieu de 2) : −4 USD sur V1
+- Disques 70/50 GB (au lieu de 100/50) : −0.5 USD par campagne
+- Région `europe-west1` (moins chère que multi-région) : stabilisation
+- Élimination doublons ressources : ~10 USD économisés total
+
+**Poste critique caché** : GMP ingestion sur V2 (cardinality × 9 amendements). Sans `Telemetry` API drop labels côté Istio, peut grimper à 25 USD sur V2 seul. Filter appliqué en T2 obligatoire.
+
+**Bloqué sans quota SSD upgrade** (demande envoyée, réponse 24-48h) :
+- Amendement 09 Bank of Anthos (+3 nodes = 600 GB > quota 500) → attendre upgrade
+- Multi-region cross-cluster (amend 08 étendu) → non nécessaire au mémoire
 
 **Garde-fous en place :**
-- Alertes budget à 50 % / 80 % / 95 % / 100 % (email `stive.chameni@facsciences-uy1.cm`)
+- Alertes budget à 50 % / 80 % / 95 % (email `stive.chameni@facsciences-uy1.cm`), hard cap **300 USD**
 - `tools/budget-check.sh` (check quotidien via GitHub Actions cron 06:00 UTC)
 - `tools/cleanup-orphans.sh` (détection cluster/PD/LB orphelins)
 - Destruction obligatoire cluster après chaque phase (`99-destroy.sh`)
-- **Interdiction** de laisser un cluster idle > 1 h hors bench (150 USD/mois par cluster oublié).
+- **Interdiction** de laisser un cluster idle > 1 h hors bench (150 USD/mois par cluster oublié)
 
 ---
 

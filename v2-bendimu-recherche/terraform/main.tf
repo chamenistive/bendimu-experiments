@@ -21,7 +21,7 @@ module "gke_primary" {
       name         = "sut"
       node_count   = 5
       machine_type = "n2-standard-4"
-      disk_size_gb = 100
+      disk_size_gb = var.sut_disk_size_gb
       disk_type    = "pd-ssd"
       preemptible  = false
       labels       = { "bendimu.pool" = "sut" }
@@ -31,7 +31,7 @@ module "gke_primary" {
       name         = "load"
       node_count   = 2
       machine_type = "n2-standard-4"
-      disk_size_gb = 50
+      disk_size_gb = var.load_disk_size_gb
       disk_type    = "pd-ssd"
       preemptible  = false
       labels       = { "bendimu.pool" = "load" }

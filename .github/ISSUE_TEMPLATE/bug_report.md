@@ -8,7 +8,7 @@ labels: bug
 - Version : V0 / V1 / V2 / bootstrap / tools
 - Script échoué : `path/du/script.sh`
 - Cluster : `bendimu-vX`
-- Region : `europe-west9`
+- Region : `europe-west1`
 
 **Comportement observé**
 Ce qui s'est passé.

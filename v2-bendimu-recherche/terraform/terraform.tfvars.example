@@ -1,10 +1,17 @@
 project_id             = "bendimu-mesh-bench"
-region                 = "europe-west9"
-primary_zone           = "europe-west9-a"
+region                 = "europe-west1"
+primary_zone           = "europe-west1-b"
 cluster_name           = "bendimu-v2"
 k8s_version            = "1.30.5-gke.1355000"
 network_name           = "bendimu-vpc"
-subnetwork_name        = "bendimu-subnet-europe-west9"
+subnetwork_name        = "bendimu-subnet-europe-west1"
 node_sa_email          = "bendimu-gke-nodes@bendimu-mesh-bench.iam.gserviceaccount.com"
-enable_external_sut    = true   # pour Bank of Anthos + OBP
-enable_a8_multi_region = false  # true UNIQUEMENT lors du run A8 (coût élevé)
+
+# Tailles disques PD-SSD (quota SSD_TOTAL_GB actuel = 500 GB)
+# Défaut : 5×70 + 2×50 = 450 GB (external-sut = pd-standard, hors quota SSD)
+sut_disk_size_gb  = 70
+load_disk_size_gb = 50
+
+# Amendements optionnels (activation à la demande)
+enable_external_sut    = false  # true pour amendement 09 Bank of Anthos (+2 nodes pd-standard)
+enable_a8_multi_region = false  # true UNIQUEMENT si quota SSD upgradé, cross-region coût élevé

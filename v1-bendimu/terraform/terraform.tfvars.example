@@ -1,8 +1,14 @@
 project_id      = "bendimu-mesh-bench"
-region          = "europe-west9"
-zone            = "europe-west9-a"
+region          = "europe-west1"
+zone            = "europe-west1-b"
 cluster_name    = "bendimu-v1"
 k8s_version     = "1.30.5-gke.1355000"
 network_name    = "bendimu-vpc"
-subnetwork_name = "bendimu-subnet-europe-west9"
+subnetwork_name = "bendimu-subnet-europe-west1"
 node_sa_email   = "bendimu-gke-nodes@bendimu-mesh-bench.iam.gserviceaccount.com"
+
+# Tailles disques PD-SSD (quota SSD_TOTAL_GB actuel = 500 GB)
+# Défaut : 5×70 + 2×50 = 450 GB total (50 GB marge)
+# T4 séquentiel (Istio → Cilium) sur même cluster = pas de doublement
+sut_disk_size_gb  = 70
+load_disk_size_gb = 50

@@ -74,8 +74,8 @@ tools/budget-check.sh
 
 Sortie type post-destroy réussi :
 ```
-Budget mois courant : 800 USD
-Consommé : 22.14 USD (2.77 %)
+Budget mois courant : 300 USD (crédit UY1)
+Consommé : 22.14 USD (7.38 %)
 Prévision fin de mois : 22.14 USD (aucune ressource active)
 Top 3 postes :
   1. Compute Engine (VM SUT nodes)     — 12.30 USD

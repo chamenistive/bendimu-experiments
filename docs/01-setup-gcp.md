@@ -19,7 +19,7 @@
 | **CI/CD** | GitHub Actions (repo privé) | Free tier suffisant, tokens gérés via `GITHUB_TOKEN` + WIF |
 | **Compte GCP (crédits)** | `stive.chameni@facsciences-uy1.cm` | Compte académique Université Yaoundé 1 hébergeant les crédits |
 | **Contact alertes** | `stive.chameni@facsciences-uy1.cm` | Budget alerts + owner IAM |
-| **Budget hard cap** | **800 USD / mois** | Marge 3 campagnes × ~150 USD, alerte auto-shutdown à 90 % |
+| **Budget hard cap** | **300 USD (crédit UY1 total)** | Marge 3 campagnes × ~150 USD, alerte auto-shutdown à 90 % |
 
 Si un paramètre change, éditer `.env` racine puis répercuter dans `bootstrap/terraform.tfvars`.
 

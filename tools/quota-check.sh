@@ -7,7 +7,9 @@ set -euo pipefail
 : "${GCP_REGION:?GCP_REGION non défini}"
 
 REQUIRED_CPUS=40
-REQUIRED_SSD_GB=1000
+# SSD_TOTAL_GB : besoin réel 450 GB (5×70 SUT + 2×50 load = 450). Quota 500 GB Free-Trial-upgraded suffit.
+# Passer à 1000 UNIQUEMENT si campagne V2 étendue (Anthos SSD ou multi-region).
+REQUIRED_SSD_GB=450
 REQUIRED_ADDRESSES=5
 
 echo "🔍 Vérification quotas GCP pour projet=${GCP_PROJECT_ID} region=${GCP_REGION}"

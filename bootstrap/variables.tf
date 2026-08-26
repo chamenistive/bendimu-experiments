@@ -15,12 +15,12 @@ variable "billing_account_id" {
 
 variable "region" {
   type    = string
-  default = "europe-west9"
+  default = "europe-west1"
 }
 
 variable "zone" {
   type    = string
-  default = "europe-west9-a"
+  default = "europe-west1-b"
 }
 
 variable "alert_email" {
