@@ -108,7 +108,7 @@ istioctl analyze -A  # zéro warning attendu
 2. **Push** vers Artifact Registry `bendimu-images`
 3. Applique manifests SUT dans `bendimu-sut-v1` (aucune injection, aucune PeerAuth)
 4. Applique Fortio DaemonSet
-5. Palier de charge : 100 → 500 → 1 000 → 2 000 → 4 000 → 8 000 → 12 800 RPS, palier 2 min, `-no-catchup -jitter`
+5. Palier de charge : 100 → 500 → 1 000 → 2 000 → 4 000 → 8 000 → 12 800 RPS, palier 2 min, `-nocatchup -jitter`
 6. 3 runs séparés (un par endpoint PSD2), ratios respectés au niveau du DaemonSet
 7. Résultats : `results/t0-baseline-reseau/`
    - `aisp-{palier}.json`
@@ -285,7 +285,7 @@ Si toutes cases OK → passer à [04-v2-recherche.md](04-v2-recherche.md).
 
 | # | Symptôme | Cause | Action |
 |---|---|---|---|
-| V1-E1 | Charge « auto-catchup » gonfle p99 artificiellement | Défaut Fortio | **Toujours** `-no-catchup -jitter -uniform` |
+| V1-E1 | Charge « auto-catchup » gonfle p99 artificiellement | Défaut Fortio | **Toujours** `-nocatchup -jitter -uniform` |
 | V1-E2 | `execute` p99 = 400 ms strict (aucune variance) | Endpoint code Go sans jitter | OK — c'est le comportement attendu, délai déterministe |
 | V1-E3 | `authorize` retourne 200 au lieu de 201 | Handler mal implémenté | Vérifier `w.WriteHeader(http.StatusCreated)` dans main.go |
 | V1-E4 | Sidecar Envoy expose `istio_agent_*` uniquement | Aucun trafic mesh encore passé | Injecter trafic AVANT scrape (attente 30 s minimum) |

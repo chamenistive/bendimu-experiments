@@ -85,17 +85,25 @@ for endpoint in "" "data10kb" "data1mb"; do
     echo "→ endpoint=/$endpoint rps=$rps"
     kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
       -qps "$rps" -c 200 -t 120s \
-      -no-catchup -jitter -uniform \
+      -nocatchup -jitter -uniform \
       -json "-" "$SUT_URL/$endpoint" \
       > "$RESULTS/${endpoint:-root}-${rps}rps.json" 2>&1 || echo "  (partial)"
     sleep 15
   done
 done
 
-# 4. RSS mémoire SUT via GMP query (à travers gcloud monitoring)
-gcloud monitoring metrics list --project="$GCP_PROJECT_ID" \
-  --filter="metric.type=~'kubernetes.io/container/memory'" \
-  --format=json > "$RESULTS/memory-baseline.json" || true
+# 4. RSS mémoire SUT via kubectl top (source directe kubelet cAdvisor)
+kubectl top pods -n bendimu-sut --containers -l app=sut-bremler \
+  --sort-by=memory 2>/dev/null > "$RESULTS/memory-baseline.txt" || true
+# Snapshot GMP time-series 5 dernières minutes (best-effort, requiert token frais)
+TOKEN=$(gcloud auth application-default print-access-token 2>/dev/null || echo "")
+if [[ -n "$TOKEN" ]]; then
+  END=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  START=$(date -u -d "5 min ago" +%Y-%m-%dT%H:%M:%SZ)
+  curl -s -H "Authorization: Bearer $TOKEN" \
+    "https://monitoring.googleapis.com/v3/projects/${GCP_PROJECT_ID}/timeSeries?filter=metric.type%3D%22kubernetes.io%2Fcontainer%2Fmemory%2Fused_bytes%22%20AND%20resource.labels.namespace_name%3D%22bendimu-sut%22&interval.startTime=${START}&interval.endTime=${END}" \
+    > "$RESULTS/memory-baseline.json" || true
+fi
 
 git tag -f v0-t0-ok
 echo "✅ V0 T0 baseline OK. Résultats : $RESULTS"

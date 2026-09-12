@@ -365,13 +365,13 @@ egress:
 
 **Anticipation GCP :** même problème. **Règle absolue :** Fortio dans un pod injecté (`bendimu-load` ns injecté) qui appelle le SUT via Service ClusterIP interne. **Aucun port-forward.**
 
-### G2. `-no-catchup` absent → p99 gonflé artificiellement
+### G2. `-nocatchup` absent → p99 gonflé artificiellement
 
 **Cause :** Fortio par défaut rattrape les requêtes perdues, ce qui accumule un backlog qui fausse la mesure de latence.
 
 **Fix :** tous les scripts `0X-*.sh` passent explicitement :
 ```bash
-fortio load -no-catchup -jitter -uniform -qps=$RPS -c=$CONN -t=120s ...
+fortio load -nocatchup -jitter -uniform -qps=$RPS -c=$CONN -t=120s ...
 ```
 
 ### G3. `kubectl exec fortio load` : stdout bloqué

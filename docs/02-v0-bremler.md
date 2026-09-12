@@ -101,7 +101,7 @@ Ce script :
 1. Déploie `simulated_tls_server` (image `yanivdocker92/simulated_tls_server:0.0.3`) dans `bendimu-sut` sans injection sidecar, sans NetworkPolicy Cilium
 2. Attend `Ready` 5/5 réplicas
 3. Déploie Fortio DaemonSet dans `bendimu-load` (2 pods sur 2 nodes load)
-4. Charge progressive : 100 → 500 → 1 000 → 2 000 → 4 000 → 8 000 → 12 800 RPS, palier 2 min, `-no-catchup -jitter -uniform`
+4. Charge progressive : 100 → 500 → 1 000 → 2 000 → 4 000 → 8 000 → 12 800 RPS, palier 2 min, `-nocatchup -jitter -uniform`
 5. Endpoints : `/`, `/data10kb`, `/data1mb` (ratio 33/33/33)
 6. Écrit résultats JSON dans `results/t0-baseline/`
 7. Scrape RSS mémoire pod SUT via GMP
@@ -262,7 +262,7 @@ Si toutes cases OK → passer à [03-v1-bendimu.md](03-v1-bendimu.md).
 | V0-E1 | `istio_requests_total = 0` malgré trafic | Fortio hors mesh (via port-forward ou LB direct) | Vérifier pod Fortio a label `istio-injection` OU tourne dans namespace injecté |
 | V0-E2 | Cilium `ImagePullBackOff` | `image.useDigest=true` avec image miroir Artifact Registry (digest ≠) | Values Helm : `image.useDigest: false` |
 | V0-E3 | LB Google health checks failing sur pod injecté | `PeerAuth STRICT` bloque probes non-mTLS | `BackendConfig` port 15021 (Envoy status port hors STRICT) |
-| V0-E4 | Fortio timeout après 30 s | `-no-catchup` absent, backlog s'accumule | Toujours `-no-catchup -jitter` sur runs > 60 s |
+| V0-E4 | Fortio timeout après 30 s | `-nocatchup` absent, backlog s'accumule | Toujours `-nocatchup -jitter` sur runs > 60 s |
 | V0-E5 | p99 baseline anormalement élevé | Fortio et SUT sur mêmes nodes → contention | Node selector strict sur pool `load` vs pool `sut` |
 
 Détail complet des modes d'échec dans [05-troubleshooting.md](05-troubleshooting.md).
