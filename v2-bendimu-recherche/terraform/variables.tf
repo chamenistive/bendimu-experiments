@@ -19,7 +19,7 @@ variable "cluster_name" {
 
 variable "k8s_version" {
   type    = string
-  default = "1.30.5-gke.1355000"
+  default = "1.35.6-gke.1250000"
 }
 
 variable "network_name" {

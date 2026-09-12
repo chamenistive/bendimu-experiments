@@ -18,15 +18,19 @@ terraform {
 }
 
 provider "google" {
-  project = var.project_id
-  region  = var.region
-  zone    = var.primary_zone
+  project               = var.project_id
+  region                = var.region
+  zone                  = var.primary_zone
+  billing_project       = var.project_id
+  user_project_override = true
 }
 
 provider "google-beta" {
-  project = var.project_id
-  region  = var.region
-  zone    = var.primary_zone
+  project               = var.project_id
+  region                = var.region
+  zone                  = var.primary_zone
+  billing_project       = var.project_id
+  user_project_override = true
 }
 
 data "google_client_config" "default" {}

@@ -19,7 +19,7 @@ resource "google_container_cluster" "this" {
     services_ipv4_cidr_block = ""
   }
 
-  release_channel { channel = "UNSPECIFIED" }
+  release_channel { channel = "STABLE" }
 
   network_policy {
     enabled  = var.disable_kube_network_policy ? false : true
