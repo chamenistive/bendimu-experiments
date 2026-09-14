@@ -31,21 +31,26 @@ spec:
     mode: STRICT
 EOF
 
-# 3. Vérif mTLS via `istioctl x describe pod` (commande `authn tls-check`
-# retirée dans Istio récents, y compris 1.22 canary). `x describe pod` affiche
-# le mode mTLS effectif appliqué au pod.
+# 3. Vérif mTLS état effectif via cluster state directement.
+# istioctl `authn tls-check` retiré (Istio 1.23+ et déjà indisponible 1.22.6).
+# istioctl `x describe pod` a un bug avec GKE 1.35 (résolution pod cassée).
+# On valide via 3 signaux : (a) pods READY 2/2 = sidecar injecté,
+# (b) PeerAuthentication default mode STRICT exists, (c) istiod running.
 sleep 15
-ISTIOCTL_122="$(command -v istioctl-1.22 || echo "$HOME/.local/bin/istioctl-1.22")"
-[[ -x "$ISTIOCTL_122" ]] || { echo "istioctl-1.22 absent, voir docs/00 §2.2"; exit 1; }
 SUT_POD="$(kubectl -n bendimu-sut get pod -l app=sut-bremler -o jsonpath='{.items[0].metadata.name}')"
-DESCRIBE_OUT="$("$ISTIOCTL_122" x describe pod "$SUT_POD" -n bendimu-sut 2>&1)"
-echo "$DESCRIBE_OUT"
-if echo "$DESCRIBE_OUT" | grep -qE "mTLS mode: STRICT|PeerAuthentication.*STRICT"; then
-  echo "✅ mTLS STRICT confirmé sur $SUT_POD"
+READY_RATIO="$(kubectl -n bendimu-sut get pod "$SUT_POD" -o jsonpath='{.status.containerStatuses[*].ready}')"
+PA_MODE="$(kubectl -n bendimu-sut get peerauthentication default -o jsonpath='{.spec.mtls.mode}' 2>/dev/null || echo "ABSENT")"
+ISTIOD_READY="$(kubectl -n istio-system get deploy istiod -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo 0)"
+
+echo "→ SUT pod ready containers : $READY_RATIO"
+echo "→ PeerAuthentication mode  : $PA_MODE"
+echo "→ istiod ready replicas    : $ISTIOD_READY"
+
+if [[ "$READY_RATIO" == "true true" && "$PA_MODE" == "STRICT" && "$ISTIOD_READY" -ge 1 ]]; then
+  echo "✅ mTLS STRICT actif (sidecar 2/2 + PA STRICT + istiod up)"
 else
-  echo "⚠️  mTLS STRICT non explicite dans describe. Verify manuel :"
-  echo "    kubectl -n bendimu-sut get peerauthentication -o yaml"
-  # non-bloquant : PA a été apply, sidecar inject OK, on continue
+  echo "❌ Etat mTLS incohérent. Aborter."
+  exit 1
 fi
 
 # 4. Palier de charge (fortio dans pod mesh)
