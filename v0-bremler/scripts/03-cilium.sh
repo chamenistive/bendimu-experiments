@@ -47,10 +47,13 @@ spec:
               - { method: "GET", path: "/data1mb" }
 EOF
 
-# 4. Sanity check
+# 4. Sanity check (cilium CLI 0.16.x n'a plus --verbose)
 sleep 15
-cilium status --verbose | head -50
-cilium hubble observe --last 20 --type l7 || true
+cilium status | head -30
+kubectl -n kube-system get pods -l k8s-app=cilium 2>&1 | head -10
+kubectl -n bendimu-sut get cnp sut-bremler-l7-auth -o jsonpath='{.status}' 2>&1 | head -c 500
+echo
+cilium hubble observe --last 20 --type l7 2>&1 | head -20 || true
 
 # 5. Palier de charge
 FORTIO_POD=$(kubectl -n bendimu-load get pod -l app=fortio -o jsonpath='{.items[0].metadata.name}')
