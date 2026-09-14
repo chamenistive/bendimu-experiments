@@ -31,7 +31,12 @@ terraform init \
 terraform plan -target=module.gke -out=v0-gke.plan
 echo
 read -rp "Continuer avec apply cluster ? [y/N] " ans
-[[ "$ans" == "y" || "$ans" == "Y" ]] || { echo "Annulé."; exit 1; }
+# Skip prompt si SKIP_PROMPT=1 dans env. Sinon accept y|Y|yes|YES|Yes (case-insensitive, robust CR).
+ans_trim="${ans//[$'\r\n\t ']/}"
+case "${ans_trim,,}" in
+  y|yes) ;;
+  *) echo "Annulé (réponse reçue : '$ans')."; exit 1 ;;
+esac
 terraform apply -auto-approve v0-gke.plan
 
 # 3. kubectl context
