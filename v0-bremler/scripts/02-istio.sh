@@ -57,13 +57,22 @@ fi
 FORTIO_POD=$(kubectl -n bendimu-load get pod -l app=fortio -o jsonpath='{.items[0].metadata.name}')
 SUT_URL="http://sut-bremler.bendimu-sut.svc.cluster.local:8080"
 
+# Charge : Fortio écrit le JSON dans /tmp du pod, on rapatrie ensuite via cat.
+# Pattern robuste : évite le flood stdout qui casse kubectl exec (SPDY/HTTP2 relay).
+# Rationale : à haute RPS + mTLS, Fortio générait des warns intermédiaires (Read
+# errors EOF, etc.) sur stdout → K8s API server relay droppait le stream avant
+# la fin. Résultat : "partiels" 925B sans données. On sépare exécution (silent)
+# et récupération (unique burst read).
 for endpoint in "" "data10kb" "data1mb"; do
   for rps in 100 500 1000 2000 4000 8000 12800; do
     echo "→ endpoint=/$endpoint rps=$rps"
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-      -qps "$rps" -c 200 -t 120s \
-      -nocatchup -jitter -uniform -httpbufferkb 2048 \
-      -json "-" "$SUT_URL/$endpoint" \
+    kubectl -n bendimu-load exec "$FORTIO_POD" -- sh -c "\
+      rm -f /tmp/fortio-result.json && \
+      fortio load -qps $rps -c 200 -t 120s \
+        -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+        -json /tmp/fortio-result.json \
+        '$SUT_URL/$endpoint' >/dev/null 2>&1; \
+      cat /tmp/fortio-result.json 2>/dev/null || echo '{\"error\":\"no result file\"}'" \
       > "$RESULTS/${endpoint:-root}-${rps}rps.json" 2>&1 || echo "  (partial)"
     sleep 15
   done
