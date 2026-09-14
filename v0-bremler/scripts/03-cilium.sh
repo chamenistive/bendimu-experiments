@@ -42,9 +42,9 @@ spec:
         - ports: [{ port: "8080", protocol: TCP }]
           rules:
             http:
-              - method: "GET", path: "/"
-              - method: "GET", path: "/data10kb"
-              - method: "GET", path: "/data1mb"
+              - { method: "GET", path: "/" }
+              - { method: "GET", path: "/data10kb" }
+              - { method: "GET", path: "/data1mb" }
 EOF
 
 # 4. Sanity check
