@@ -16,7 +16,10 @@ kubectl -n bendimu-load rollout restart ds/fortio
 kubectl -n bendimu-sut  rollout status deployment/sut-bremler --timeout=180s
 kubectl -n bendimu-load rollout status ds/fortio --timeout=120s
 
-# 2. PeerAuthentication STRICT + exception health check
+# 2. PeerAuthentication STRICT namespace-wide.
+# Note : Istio auto-bypass des health checks GKE via localhost (rewriteAppHTTPProbers
+# activé par défaut sur sidecar injection). Pas de portLevelMtls nécessaire —
+# et interdit sur PA namespace-scope (validation webhook Istio 1.22+).
 cat <<'EOF' | kubectl apply -f -
 apiVersion: security.istio.io/v1
 kind: PeerAuthentication
@@ -24,9 +27,8 @@ metadata:
   name: default
   namespace: bendimu-sut
 spec:
-  mtls: { mode: STRICT }
-  portLevelMtls:
-    "15021": { mode: PERMISSIVE }
+  mtls:
+    mode: STRICT
 EOF
 
 # 3. Vérif mTLS
