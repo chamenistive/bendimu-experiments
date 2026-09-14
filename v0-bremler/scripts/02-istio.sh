@@ -52,10 +52,17 @@ for endpoint in "" "data10kb" "data1mb"; do
   done
 done
 
-# 5. RSS Envoy sidecar
-gcloud monitoring metrics list --project="$GCP_PROJECT_ID" \
-  --filter="metric.type=~'kubernetes.io/container/memory' AND resource.label.container_name='istio-proxy'" \
-  --format=json > "$RESULTS/memory-envoy.json" || true
+# 5. RSS Envoy sidecar (kubectl top + curl API Monitoring v3)
+kubectl top pods -n bendimu-sut --containers -l app=sut-bremler \
+  --sort-by=memory 2>/dev/null > "$RESULTS/memory-envoy.txt" || true
+TOKEN=$(gcloud auth application-default print-access-token 2>/dev/null || echo "")
+if [[ -n "$TOKEN" ]]; then
+  END=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  START=$(date -u -d "5 min ago" +%Y-%m-%dT%H:%M:%SZ)
+  curl -s -H "Authorization: Bearer $TOKEN" \
+    "https://monitoring.googleapis.com/v3/projects/${GCP_PROJECT_ID}/timeSeries?filter=metric.type%3D%22kubernetes.io%2Fcontainer%2Fmemory%2Fused_bytes%22%20AND%20resource.labels.container_name%3D%22istio-proxy%22&interval.startTime=${START}&interval.endTime=${END}" \
+    > "$RESULTS/memory-envoy.json" || true
+fi
 
 git tag -f v0-t1-ok
 echo "✅ V0 T1 Istio OK. Résultats : $RESULTS"
