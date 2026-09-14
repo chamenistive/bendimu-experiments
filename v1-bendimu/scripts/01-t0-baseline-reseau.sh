@@ -94,17 +94,17 @@ for total_rps in 100 500 1000 2000 4000 8000 12800; do
   echo "→ total=${total_rps} RPS (aisp=$aisp_rps, authorize=$auth_rps, execute=$exec_rps)"
 
   kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-    -qps "$aisp_rps" -c 128 -t 120s -nocatchup -jitter -uniform \
+    -qps "$aisp_rps" -c 128 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 \
     -json - "$SUT/aisp/accounts" > "$RESULTS/aisp-${total_rps}rps.json" 2>&1 &
   PID_AISP=$!
 
   kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-    -qps "$auth_rps" -c 64 -t 120s -nocatchup -jitter -uniform \
+    -qps "$auth_rps" -c 64 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 \
     -method POST -json - "$SUT/pisp/authorize" > "$RESULTS/authorize-${total_rps}rps.json" 2>&1 &
   PID_AUTH=$!
 
   kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-    -qps "$exec_rps" -c 64 -t 120s -nocatchup -jitter -uniform \
+    -qps "$exec_rps" -c 64 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 \
     -method POST -json - "$SUT/pisp/execute" > "$RESULTS/execute-${total_rps}rps.json" 2>&1 &
   PID_EXEC=$!
 

@@ -1,56 +1,555 @@
-{"ts":1789244502.896374,"level":"info","r":1,"file":"scli.go","line":122,"msg":"Starting","command":"Φορτίο","version":"1.68.0 h1:2M9RuitiN+MgW6QlTJCHjW6PJLAPj/YCXegxSCLQ3rw= go1.23.3 amd64 linux","go-max-procs":4}
-Fortio 1.68.0 running at 100 queries per second, 4->4 procs, for 2m0s: http://sut-bremler.bendimu-sut.svc.cluster.local:8080/data1mb
-{"ts":1789244502.897195,"level":"info","r":1,"file":"httprunner.go","line":121,"msg":"Starting http test","run":0,"url":"http://sut-bremler.bendimu-sut.svc.cluster.local:8080/data1mb","threads":50,"qps":"100.0","warmup":"parallel","conn-reuse":""}
-{"ts":1789244503.608590,"level":"warn","r":453,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":21,"run":0}
-{"ts":1789244503.608709,"level":"warn","r":479,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":47,"run":0}
-{"ts":1789244503.608844,"level":"warn","r":460,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":28,"run":0}
-{"ts":1789244503.608917,"level":"warn","r":447,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":15,"run":0}
-{"ts":1789244503.609799,"level":"warn","r":441,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":9,"run":0}
-{"ts":1789244503.613581,"level":"warn","r":478,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":46,"run":0}
-{"ts":1789244503.617308,"level":"warn","r":463,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":31,"run":0}
-{"ts":1789244503.620009,"level":"warn","r":458,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":26,"run":0}
-{"ts":1789244503.620414,"level":"warn","r":454,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":22,"run":0}
-{"ts":1789244503.620435,"level":"warn","r":473,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":41,"run":0}
-{"ts":1789244503.623534,"level":"warn","r":476,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":44,"run":0}
-{"ts":1789244503.627394,"level":"warn","r":455,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":23,"run":0}
-{"ts":1789244503.629652,"level":"warn","r":449,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":17,"run":0}
-{"ts":1789244503.629689,"level":"warn","r":452,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":20,"run":0}
-{"ts":1789244503.636517,"level":"warn","r":459,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":27,"run":0}
-{"ts":1789244503.636561,"level":"warn","r":469,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":37,"run":0}
-{"ts":1789244503.636722,"level":"warn","r":434,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":2,"run":0}
-{"ts":1789244503.643172,"level":"warn","r":466,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":34,"run":0}
-{"ts":1789244503.636517,"level":"warn","r":442,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":10,"run":0}
-{"ts":1789244503.647158,"level":"warn","r":443,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":11,"run":0}
-{"ts":1789244503.662449,"level":"warn","r":456,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":24,"run":0}
-{"ts":1789244503.662476,"level":"warn","r":450,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":18,"run":0}
-{"ts":1789244503.662525,"level":"warn","r":465,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":33,"run":0}
-{"ts":1789244503.662561,"level":"warn","r":462,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":30,"run":0}
-{"ts":1789244503.666182,"level":"warn","r":435,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":3,"run":0}
-{"ts":1789244503.666752,"level":"warn","r":440,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":8,"run":0}
-{"ts":1789244503.666256,"level":"warn","r":470,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":38,"run":0}
-{"ts":1789244503.693226,"level":"warn","r":468,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":36,"run":0}
-{"ts":1789244503.763375,"level":"warn","r":472,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":40,"run":0}
-{"ts":1789244503.763572,"level":"warn","r":464,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":32,"run":0}
-{"ts":1789244503.763989,"level":"warn","r":481,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":49,"run":0}
-{"ts":1789244503.778761,"level":"warn","r":461,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":29,"run":0}
-{"ts":1789244503.787643,"level":"warn","r":451,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":19,"run":0}
-{"ts":1789244503.788078,"level":"warn","r":444,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":12,"run":0}
-{"ts":1789244503.789417,"level":"warn","r":477,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":45,"run":0}
-{"ts":1789244503.789624,"level":"warn","r":438,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":6,"run":0}
-{"ts":1789244503.788016,"level":"warn","r":457,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":25,"run":0}
-{"ts":1789244503.816751,"level":"warn","r":480,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":48,"run":0}
-{"ts":1789244503.829138,"level":"warn","r":400,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":0,"run":0}
-{"ts":1789244503.887731,"level":"warn","r":437,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":5,"run":0}
-{"ts":1789244503.912464,"level":"warn","r":448,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":16,"run":0}
-{"ts":1789244503.913176,"level":"warn","r":471,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":39,"run":0}
-{"ts":1789244503.913880,"level":"warn","r":439,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":7,"run":0}
-{"ts":1789244503.924744,"level":"warn","r":433,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":1,"run":0}
-{"ts":1789244503.952287,"level":"warn","r":446,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":14,"run":0}
-{"ts":1789244503.984545,"level":"warn","r":467,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":35,"run":0}
-{"ts":1789244504.010291,"level":"warn","r":474,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":42,"run":0}
-{"ts":1789244504.057097,"level":"warn","r":475,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":43,"run":0}
-{"ts":1789244504.057489,"level":"warn","r":436,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":4,"run":0}
-{"ts":1789244504.253549,"level":"warn","r":445,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":13,"run":0}
-E0912 21:31:11.539552  117796 v2.go:150] "Unhandled Error" err="next reader: read tcp 192.168.225.70:49756->34.140.211.2:443: i/o timeout"
-E0912 21:31:11.539669  117796 v2.go:167] "Unhandled Error" err="next reader: read tcp 192.168.225.70:49756->34.140.211.2:443: i/o timeout"
-error: error reading from error stream: next reader: read tcp 192.168.225.70:49756->34.140.211.2:443: i/o timeout
+{
+  "RunType": "HTTP",
+  "Labels": "sut-bremler.bendimu-sut.svc.cluster.local:8080/data1mb , fortio-jvdvk",
+  "StartTime": "2026-09-14T17:41:14.581752335Z",
+  "RequestedQPS": "100",
+  "RequestedDuration": "2m0s",
+  "ActualQPS": 98.19744363241075,
+  "ActualDuration": 122182406753,
+  "NumThreads": 200,
+  "Version": "1.68.0",
+  "DurationHistogram": {
+    "Count": 11998,
+    "Min": 0.002200263,
+    "Max": 0.013526414,
+    "Sum": 39.11133479399998,
+    "Avg": 0.003259821203033837,
+    "StdDev": 0.0006458604714729583,
+    "Data": [
+      {
+        "Start": 0.002200263,
+        "End": 0.003,
+        "Percent": 32.0470078346391,
+        "Count": 3845
+      },
+      {
+        "Start": 0.003,
+        "End": 0.004,
+        "Percent": 93.99066511085181,
+        "Count": 7432
+      },
+      {
+        "Start": 0.004,
+        "End": 0.005,
+        "Percent": 98.99149858309718,
+        "Count": 600
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 99.43323887314553,
+        "Count": 53
+      },
+      {
+        "Start": 0.006,
+        "End": 0.007,
+        "Percent": 99.52492082013669,
+        "Count": 11
+      },
+      {
+        "Start": 0.007,
+        "End": 0.008,
+        "Percent": 99.59159859976663,
+        "Count": 8
+      },
+      {
+        "Start": 0.008,
+        "End": 0.009000000000000001,
+        "Percent": 99.67494582430405,
+        "Count": 10
+      },
+      {
+        "Start": 0.009000000000000001,
+        "End": 0.01,
+        "Percent": 99.76662777129522,
+        "Count": 11
+      },
+      {
+        "Start": 0.01,
+        "End": 0.011,
+        "Percent": 99.84997499583264,
+        "Count": 10
+      },
+      {
+        "Start": 0.011,
+        "End": 0.012,
+        "Percent": 99.95832638773129,
+        "Count": 13
+      },
+      {
+        "Start": 0.012,
+        "End": 0.013526414,
+        "Percent": 100,
+        "Count": 5
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.003289827771797632
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.0036934203444564046
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.003935575888051669
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.005019245283018867
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.011461692307692352
+      }
+    ]
+  },
+  "ErrorsDurationHistogram": {
+    "Count": 0,
+    "Min": 0,
+    "Max": 0,
+    "Sum": 0,
+    "Avg": 0,
+    "StdDev": 0,
+    "Data": null
+  },
+  "Exactly": 0,
+  "Jitter": true,
+  "Uniform": true,
+  "NoCatchUp": true,
+  "RunID": 0,
+  "AccessLoggerInfo": "",
+  "ID": "2026-09-14-174112_sut_bremler_bendimu_sut_svc_cluster_local_8080_data1mb_fortio_jvdvk",
+  "RetCodes": {
+    "200": 11998
+  },
+  "IPCountMap": {
+    "34.118.234.187:8080": 200
+  },
+  "Insecure": false,
+  "MTLS": false,
+  "CACert": "",
+  "Cert": "",
+  "Key": "",
+  "UnixDomainSocket": "",
+  "URL": "http://sut-bremler.bendimu-sut.svc.cluster.local:8080/data1mb",
+  "NumConnections": 1,
+  "Compression": false,
+  "DisableFastClient": false,
+  "HTTP10": false,
+  "H2": false,
+  "DisableKeepAlive": false,
+  "AllowHalfClose": false,
+  "FollowRedirects": false,
+  "Resolve": "",
+  "HTTPReqTimeOut": 3000000000,
+  "UserCredentials": "",
+  "ContentType": "",
+  "Payload": "",
+  "MethodOverride": "",
+  "LogErrors": true,
+  "SequentialWarmup": false,
+  "ConnReuseRange": [
+    0,
+    0
+  ],
+  "NoResolveEachConn": false,
+  "Offset": 0,
+  "Resolution": 0.001,
+  "Sizes": {
+    "Count": 11998,
+    "Min": 1048715,
+    "Max": 1048715,
+    "Sum": 12582482570,
+    "Avg": 1048715,
+    "StdDev": 0.012911020450562605,
+    "Data": [
+      {
+        "Start": 1048715,
+        "End": 1048715,
+        "Percent": 100,
+        "Count": 11998
+      }
+    ]
+  },
+  "HeaderSizes": {
+    "Count": 11998,
+    "Min": 124,
+    "Max": 124,
+    "Sum": 1487752,
+    "Avg": 124,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 124,
+        "End": 124,
+        "Percent": 100,
+        "Count": 11998
+      }
+    ]
+  },
+  "Sockets": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "SocketCount": 200,
+  "ConnectionStats": {
+    "Count": 200,
+    "Min": 0.000313913,
+    "Max": 0.05357978,
+    "Sum": 1.9022145319999995,
+    "Avg": 0.009511072659999998,
+    "StdDev": 0.008501774018908862,
+    "Data": [
+      {
+        "Start": 0.000313913,
+        "End": 0.001,
+        "Percent": 8.5,
+        "Count": 17
+      },
+      {
+        "Start": 0.001,
+        "End": 0.002,
+        "Percent": 15.5,
+        "Count": 14
+      },
+      {
+        "Start": 0.002,
+        "End": 0.003,
+        "Percent": 22.5,
+        "Count": 14
+      },
+      {
+        "Start": 0.003,
+        "End": 0.004,
+        "Percent": 30,
+        "Count": 15
+      },
+      {
+        "Start": 0.004,
+        "End": 0.005,
+        "Percent": 34,
+        "Count": 8
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 36,
+        "Count": 4
+      },
+      {
+        "Start": 0.006,
+        "End": 0.007,
+        "Percent": 39.5,
+        "Count": 7
+      },
+      {
+        "Start": 0.007,
+        "End": 0.008,
+        "Percent": 47.5,
+        "Count": 16
+      },
+      {
+        "Start": 0.008,
+        "End": 0.009000000000000001,
+        "Percent": 55.5,
+        "Count": 16
+      },
+      {
+        "Start": 0.009000000000000001,
+        "End": 0.01,
+        "Percent": 64,
+        "Count": 17
+      },
+      {
+        "Start": 0.01,
+        "End": 0.011,
+        "Percent": 72,
+        "Count": 16
+      },
+      {
+        "Start": 0.011,
+        "End": 0.012,
+        "Percent": 78,
+        "Count": 12
+      },
+      {
+        "Start": 0.012,
+        "End": 0.014,
+        "Percent": 84.5,
+        "Count": 13
+      },
+      {
+        "Start": 0.014,
+        "End": 0.016,
+        "Percent": 86.5,
+        "Count": 4
+      },
+      {
+        "Start": 0.016,
+        "End": 0.018000000000000002,
+        "Percent": 87.5,
+        "Count": 2
+      },
+      {
+        "Start": 0.018000000000000002,
+        "End": 0.02,
+        "Percent": 89,
+        "Count": 3
+      },
+      {
+        "Start": 0.02,
+        "End": 0.025,
+        "Percent": 93.5,
+        "Count": 9
+      },
+      {
+        "Start": 0.025,
+        "End": 0.03,
+        "Percent": 95,
+        "Count": 3
+      },
+      {
+        "Start": 0.03,
+        "End": 0.035,
+        "Percent": 98.5,
+        "Count": 7
+      },
+      {
+        "Start": 0.035,
+        "End": 0.04,
+        "Percent": 99.5,
+        "Count": 2
+      },
+      {
+        "Start": 0.05,
+        "End": 0.05357978,
+        "Percent": 100,
+        "Count": 1
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.0083125
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.0115
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.021111111111111112
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.037500000000000006
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.05286382400000004
+      }
+    ]
+  },
+  "AbortOn": 0
+}

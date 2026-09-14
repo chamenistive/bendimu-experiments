@@ -7,15 +7,19 @@ cluster `bremler-v0` (GKE zonal europe-west1-b, k8s 1.35.6-gke.1250000,
 
 Charge : 3 endpoints × 7 paliers RPS × 120s.
 
-## Résultats capturés (21 tests)
+## Résultats capturés (21 tests) — FINAL après fix buffer + auth SA
 
 | Endpoint | Valides | Partiels | Notes |
 |---|---|---|---|
 | `/` (root) | 7/7 | 0 | Baseline propre |
-| `/data10kb` | 7/7 | 0 | 5 en `-c 200`, 2 rerun en `-c 100` (8000/12800) |
-| `/data1mb` | 2/7 | 5 | 100rps + 500rps OK. 1000/2000/4000/8000/12800 = 925B partiels |
+| `/data10kb` | 7/7 | 0 | Full baseline rerun avec `-c 200` |
+| `/data1mb` | 7/7 | 0 | Fix `-httpbufferkb 2048` + SA JSON key |
 
-**Total valides pour analyse : 16/21 (76%)**
+**Total valides : 21/21 (100%) ✅**
+
+Note sur data1mb : cible `-qps 12800` mais SUT saturé ~2434 qps réel
+(limite CPU/réseau sur payloads 1MB). Metric significant = throughput
+plateau + p99 sous saturation.
 
 ## Cause partiels `/data1mb` haute RPS
 

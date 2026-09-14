@@ -7,6 +7,48 @@
 
 ---
 
+## Session Sep 14 2026 (soir) — T0 baseline **COMPLET 21/21** + fixes durables
+
+**Statut final : ✅ T0 baseline validé complet (21/21). Prêt pour T1 Istio.**
+
+### Opérations
+- Re-auth stive.chameni + re-provision cluster V0 (script `00-provision.sh` corrigé fonctionne)
+- `01-baseline.sh` full run : root ×7 ✓ + data10kb ×7 ✓, mais data1mb 6/7 échec à ~17:14 (auth gcloud expiré ~1h30 après login)
+- **SA JSON key** créée sur `terraform-bendimu` → `gcloud auth activate-service-account`
+- kubectl utilise SA long-lived → aucune reauth requise pendant runs
+- Rerun 7 data1mb : bug **buffer Fortio** révélé (warn spam `Buffer is too small`)
+- Fix `-httpbufferkb 2048` → tous 7 data1mb passent OK (10KB JSON compact = SUT saturé ~2434 qps réel sur cible 12800)
+
+### Erreurs révélées + fixes
+- **E14 (auth)** : `Reauthentication failed. cannot prompt` mid-run (~30 min après login). **Fix** = SA JSON key. Créé `~/.config/gcloud/bendimu-terraform-key.json` (hors repo git). `gcloud auth activate-service-account --key-file=...`. Auth kubectl stable indéfiniment.
+- **E15 (buffer)** : `Buffer is too small for headers + data - change -httpbufferkb flag`. Fortio default 128KB, needed 1025KB pour payload 1MB. Warn spam engorge stdout kubectl exec (925B partials = kubectl exec crash sous flood). **Fix** = `-httpbufferkb 2048` sur toutes invocations Fortio load. Bulk sed sur 9 scripts V0/V1/V2.
+
+### Résultat T0 baseline
+| Endpoint | Résultat |
+|---|---|
+| root ×7 | ✅ 7/7 |
+| data10kb ×7 | ✅ 7/7 |
+| data1mb ×7 | ✅ 7/7 (buffer 2048KB, SA auth) |
+
+**Total 21/21** dans `v0-bremler/results/t0-baseline/`.
+
+Insight data1mb : SUT saturé à ~2434 qps réel (bandwidth ~2.4 GB/s dépassée sur 4 vCPU par pod × 5 replicas). p99 latence à plateau saturation = donnée signifiante Bremler-Barr.
+
+### Commits associés
+- `29096ab` : `fix(v0/00-provision): auth pre-check + 2-step apply + Cilium cluster.name`
+- (pending) : results T0 21/21 + fix `-httpbufferkb 2048` bulk + SESSION_LOG update
+
+### Reprise T1
+```bash
+# Auth SA doit être active (persiste jusqu'à new login user)
+gcloud auth list  # doit montrer terraform-bendimu@... ACTIVE
+
+# Lancer T1 Istio
+bash v0-bremler/scripts/02-istio.sh
+```
+
+---
+
 ## Session Sep 14 2026 — Tentative reprise V0 (échec auth) + fix 00-provision.sh
 
 **Statut final : ⏸️ Reprise V0 avortée — auth gcloud expirée depuis pause. Script fixé pour prochaine tentative.**

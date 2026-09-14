@@ -45,7 +45,7 @@ for endpoint in "" "data10kb" "data1mb"; do
     echo "→ endpoint=/$endpoint rps=$rps"
     kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
       -qps "$rps" -c 200 -t 120s \
-      -nocatchup -jitter -uniform \
+      -nocatchup -jitter -uniform -httpbufferkb 2048 \
       -json "-" "$SUT_URL/$endpoint" \
       > "$RESULTS/${endpoint:-root}-${rps}rps.json" 2>&1 || echo "  (partial)"
     sleep 15

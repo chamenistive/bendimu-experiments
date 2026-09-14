@@ -31,13 +31,13 @@ run_bench() {
     local exec_rps=$((total_rps * 10 / 100))
 
     kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-      -qps "$aisp_rps" -c 128 -t 60s -nocatchup -jitter -uniform \
+      -qps "$aisp_rps" -c 128 -t 60s -nocatchup -jitter -uniform -httpbufferkb 2048 \
       -json - "$SUT/aisp/accounts" > "$RESULTS/aisp-${total_rps}rps.json" 2>&1 &
     kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-      -qps "$auth_rps" -c 64 -t 60s -nocatchup -jitter -uniform \
+      -qps "$auth_rps" -c 64 -t 60s -nocatchup -jitter -uniform -httpbufferkb 2048 \
       -method POST -json - "$SUT/pisp/authorize" > "$RESULTS/authorize-${total_rps}rps.json" 2>&1 &
     kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-      -qps "$exec_rps" -c 64 -t 60s -nocatchup -jitter -uniform \
+      -qps "$exec_rps" -c 64 -t 60s -nocatchup -jitter -uniform -httpbufferkb 2048 \
       -method POST -json - "$SUT/pisp/execute" > "$RESULTS/execute-${total_rps}rps.json" 2>&1 &
     wait
     sleep 10

@@ -1,31 +1,603 @@
-{"ts":1789246822.659458,"level":"info","r":1,"file":"scli.go","line":122,"msg":"Starting","command":"Φορτίο","version":"1.68.0 h1:2M9RuitiN+MgW6QlTJCHjW6PJLAPj/YCXegxSCLQ3rw= go1.23.3 amd64 linux","go-max-procs":4}
-Fortio 1.68.0 running at 500 queries per second, 4->4 procs, for 1m0s: http://sut-bremler.bendimu-sut.svc.cluster.local:8080/data1mb
-{"ts":1789246822.660260,"level":"info","r":1,"file":"httprunner.go","line":121,"msg":"Starting http test","run":0,"url":"http://sut-bremler.bendimu-sut.svc.cluster.local:8080/data1mb","threads":25,"qps":"500.0","warmup":"parallel","conn-reuse":""}
-{"ts":1789246822.972249,"level":"warn","r":236,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":8,"run":0}
-{"ts":1789246822.972848,"level":"warn","r":228,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":0,"run":0}
-{"ts":1789246822.975040,"level":"warn","r":230,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":2,"run":0}
-{"ts":1789246822.975797,"level":"warn","r":234,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":6,"run":0}
-{"ts":1789246822.975704,"level":"warn","r":242,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":14,"run":0}
-{"ts":1789246822.976332,"level":"warn","r":237,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":9,"run":0}
-{"ts":1789246822.976350,"level":"warn","r":240,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":12,"run":0}
-{"ts":1789246822.976923,"level":"warn","r":239,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":11,"run":0}
-{"ts":1789246822.977260,"level":"warn","r":233,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":5,"run":0}
-{"ts":1789246822.981798,"level":"warn","r":243,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":15,"run":0}
-{"ts":1789246822.982018,"level":"warn","r":252,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":24,"run":0}
-{"ts":1789246822.982075,"level":"warn","r":244,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":16,"run":0}
-{"ts":1789246822.982352,"level":"warn","r":246,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":18,"run":0}
-{"ts":1789246822.983648,"level":"warn","r":245,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":17,"run":0}
-{"ts":1789246822.984144,"level":"warn","r":248,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":20,"run":0}
-{"ts":1789246822.985127,"level":"warn","r":250,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":22,"run":0}
-{"ts":1789246822.985375,"level":"warn","r":241,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":13,"run":0}
-{"ts":1789246822.985420,"level":"warn","r":238,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":10,"run":0}
-{"ts":1789246823.000536,"level":"warn","r":232,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":4,"run":0}
-{"ts":1789246823.001352,"level":"warn","r":251,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":23,"run":0}
-{"ts":1789246823.001872,"level":"warn","r":231,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":3,"run":0}
-{"ts":1789246823.002256,"level":"warn","r":247,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":19,"run":0}
-{"ts":1789246823.034740,"level":"warn","r":249,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":21,"run":0}
-{"ts":1789246823.002425,"level":"warn","r":229,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":1,"run":0}
-{"ts":1789246823.108851,"level":"warn","r":235,"file":"http_client.go","line":1225,"msg":"Buffer is too small for headers + data - change -httpbufferkb flag","header_len":124,"content_length":1048576,"buffer_needed":1025,"thread":7,"run":0}
-E0912 22:51:12.650987  137973 v2.go:167] "Unhandled Error" err="next reader: read tcp 192.168.225.28:57954->34.140.211.2:443: i/o timeout"
-E0912 22:51:12.651063  137973 v2.go:150] "Unhandled Error" err="next reader: read tcp 192.168.225.28:57954->34.140.211.2:443: i/o timeout"
-error: error reading from error stream: next reader: read tcp 192.168.225.28:57954->34.140.211.2:443: i/o timeout
+{
+  "RunType": "HTTP",
+  "Labels": "sut-bremler.bendimu-sut.svc.cluster.local:8080/data1mb , fortio-jvdvk",
+  "StartTime": "2026-09-14T17:43:35.014456437Z",
+  "RequestedQPS": "500",
+  "RequestedDuration": "2m0s",
+  "ActualQPS": 498.26691002213244,
+  "ActualDuration": 120401332686,
+  "NumThreads": 200,
+  "Version": "1.68.0",
+  "DurationHistogram": {
+    "Count": 59992,
+    "Min": 0.001738406,
+    "Max": 0.036976117,
+    "Sum": 196.485136764,
+    "Avg": 0.003275188971262835,
+    "StdDev": 0.0015427087047351694,
+    "Data": [
+      {
+        "Start": 0.001738406,
+        "End": 0.002,
+        "Percent": 0.28170422723029737,
+        "Count": 169
+      },
+      {
+        "Start": 0.002,
+        "End": 0.003,
+        "Percent": 53.14708627817042,
+        "Count": 31715
+      },
+      {
+        "Start": 0.003,
+        "End": 0.004,
+        "Percent": 88.89351913588479,
+        "Count": 21445
+      },
+      {
+        "Start": 0.004,
+        "End": 0.005,
+        "Percent": 95.64941992265635,
+        "Count": 4053
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 96.99293239098546,
+        "Count": 806
+      },
+      {
+        "Start": 0.006,
+        "End": 0.007,
+        "Percent": 97.55634084544606,
+        "Count": 338
+      },
+      {
+        "Start": 0.007,
+        "End": 0.008,
+        "Percent": 98.00806774236565,
+        "Count": 271
+      },
+      {
+        "Start": 0.008,
+        "End": 0.009000000000000001,
+        "Percent": 98.404787304974,
+        "Count": 238
+      },
+      {
+        "Start": 0.009000000000000001,
+        "End": 0.01,
+        "Percent": 98.7915055340712,
+        "Count": 232
+      },
+      {
+        "Start": 0.01,
+        "End": 0.011,
+        "Percent": 99.11154820642753,
+        "Count": 192
+      },
+      {
+        "Start": 0.011,
+        "End": 0.012,
+        "Percent": 99.37324976663555,
+        "Count": 157
+      },
+      {
+        "Start": 0.012,
+        "End": 0.014,
+        "Percent": 99.64828643819176,
+        "Count": 165
+      },
+      {
+        "Start": 0.014,
+        "End": 0.016,
+        "Percent": 99.78163755167355,
+        "Count": 80
+      },
+      {
+        "Start": 0.016,
+        "End": 0.018000000000000002,
+        "Percent": 99.84164555274036,
+        "Count": 36
+      },
+      {
+        "Start": 0.018000000000000002,
+        "End": 0.02,
+        "Percent": 99.87831710894785,
+        "Count": 22
+      },
+      {
+        "Start": 0.02,
+        "End": 0.025,
+        "Percent": 99.9549939991999,
+        "Count": 46
+      },
+      {
+        "Start": 0.025,
+        "End": 0.03,
+        "Percent": 99.98333111081477,
+        "Count": 17
+      },
+      {
+        "Start": 0.03,
+        "End": 0.035,
+        "Percent": 99.99666622216296,
+        "Count": 8
+      },
+      {
+        "Start": 0.035,
+        "End": 0.036976117,
+        "Percent": 100,
+        "Count": 2
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.0029404698092385306
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.0036113313126602937
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.004163779916111522
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.010651458333333327
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.02141391304347877
+      }
+    ]
+  },
+  "ErrorsDurationHistogram": {
+    "Count": 0,
+    "Min": 0,
+    "Max": 0,
+    "Sum": 0,
+    "Avg": 0,
+    "StdDev": 0,
+    "Data": null
+  },
+  "Exactly": 0,
+  "Jitter": true,
+  "Uniform": true,
+  "NoCatchUp": true,
+  "RunID": 0,
+  "AccessLoggerInfo": "",
+  "ID": "2026-09-14-174333_sut_bremler_bendimu_sut_svc_cluster_local_8080_data1mb_fortio_jvdvk",
+  "RetCodes": {
+    "200": 59992
+  },
+  "IPCountMap": {
+    "34.118.234.187:8080": 200
+  },
+  "Insecure": false,
+  "MTLS": false,
+  "CACert": "",
+  "Cert": "",
+  "Key": "",
+  "UnixDomainSocket": "",
+  "URL": "http://sut-bremler.bendimu-sut.svc.cluster.local:8080/data1mb",
+  "NumConnections": 1,
+  "Compression": false,
+  "DisableFastClient": false,
+  "HTTP10": false,
+  "H2": false,
+  "DisableKeepAlive": false,
+  "AllowHalfClose": false,
+  "FollowRedirects": false,
+  "Resolve": "",
+  "HTTPReqTimeOut": 3000000000,
+  "UserCredentials": "",
+  "ContentType": "",
+  "Payload": "",
+  "MethodOverride": "",
+  "LogErrors": true,
+  "SequentialWarmup": false,
+  "ConnReuseRange": [
+    0,
+    0
+  ],
+  "NoResolveEachConn": false,
+  "Offset": 0,
+  "Resolution": 0.001,
+  "Sizes": {
+    "Count": 59992,
+    "Min": 1048715,
+    "Max": 1048715,
+    "Sum": 62914510280,
+    "Avg": 1048715,
+    "StdDev": 0.0711852675229103,
+    "Data": [
+      {
+        "Start": 1048715,
+        "End": 1048715,
+        "Percent": 100,
+        "Count": 59992
+      }
+    ]
+  },
+  "HeaderSizes": {
+    "Count": 59992,
+    "Min": 124,
+    "Max": 124,
+    "Sum": 7439008,
+    "Avg": 124,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 124,
+        "End": 124,
+        "Percent": 100,
+        "Count": 59992
+      }
+    ]
+  },
+  "Sockets": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "SocketCount": 200,
+  "ConnectionStats": {
+    "Count": 200,
+    "Min": 0.000160827,
+    "Max": 0.041264819,
+    "Sum": 2.0965679030000004,
+    "Avg": 0.010482839515000002,
+    "StdDev": 0.010383374555803406,
+    "Data": [
+      {
+        "Start": 0.000160827,
+        "End": 0.001,
+        "Percent": 19,
+        "Count": 38
+      },
+      {
+        "Start": 0.001,
+        "End": 0.002,
+        "Percent": 29,
+        "Count": 20
+      },
+      {
+        "Start": 0.002,
+        "End": 0.003,
+        "Percent": 32,
+        "Count": 6
+      },
+      {
+        "Start": 0.003,
+        "End": 0.004,
+        "Percent": 36,
+        "Count": 8
+      },
+      {
+        "Start": 0.004,
+        "End": 0.005,
+        "Percent": 42,
+        "Count": 12
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 48.5,
+        "Count": 13
+      },
+      {
+        "Start": 0.006,
+        "End": 0.007,
+        "Percent": 50.5,
+        "Count": 4
+      },
+      {
+        "Start": 0.007,
+        "End": 0.008,
+        "Percent": 51.5,
+        "Count": 2
+      },
+      {
+        "Start": 0.008,
+        "End": 0.009000000000000001,
+        "Percent": 54,
+        "Count": 5
+      },
+      {
+        "Start": 0.009000000000000001,
+        "End": 0.01,
+        "Percent": 56.5,
+        "Count": 5
+      },
+      {
+        "Start": 0.01,
+        "End": 0.011,
+        "Percent": 64,
+        "Count": 15
+      },
+      {
+        "Start": 0.011,
+        "End": 0.012,
+        "Percent": 65,
+        "Count": 2
+      },
+      {
+        "Start": 0.012,
+        "End": 0.014,
+        "Percent": 69,
+        "Count": 8
+      },
+      {
+        "Start": 0.014,
+        "End": 0.016,
+        "Percent": 74.5,
+        "Count": 11
+      },
+      {
+        "Start": 0.016,
+        "End": 0.018000000000000002,
+        "Percent": 80.5,
+        "Count": 12
+      },
+      {
+        "Start": 0.018000000000000002,
+        "End": 0.02,
+        "Percent": 85.5,
+        "Count": 10
+      },
+      {
+        "Start": 0.02,
+        "End": 0.025,
+        "Percent": 88.5,
+        "Count": 6
+      },
+      {
+        "Start": 0.025,
+        "End": 0.03,
+        "Percent": 92,
+        "Count": 7
+      },
+      {
+        "Start": 0.03,
+        "End": 0.035,
+        "Percent": 96.5,
+        "Count": 9
+      },
+      {
+        "Start": 0.035,
+        "End": 0.04,
+        "Percent": 99,
+        "Count": 5
+      },
+      {
+        "Start": 0.04,
+        "End": 0.041264819,
+        "Percent": 100,
+        "Count": 2
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.00675
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.016166666666666666
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.027142857142857142
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.04
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.041138337100000005
+      }
+    ]
+  },
+  "AbortOn": 0
+}
