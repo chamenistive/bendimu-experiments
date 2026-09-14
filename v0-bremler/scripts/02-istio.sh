@@ -66,17 +66,18 @@ SUT_URL="http://sut-bremler.bendimu-sut.svc.cluster.local:8080"
 for endpoint in "" "data10kb" "data1mb"; do
   for rps in 100 500 1000 2000 4000 8000 12800; do
     echo "→ endpoint=/$endpoint rps=$rps"
-    # 3 exec séparés — image fortio scratch, pas de sh.
-    # (a) supprimer résultat précédent (best-effort)
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- rm -f /tmp/fortio-result.json 2>/dev/null || true
-    # (b) run silencieux, -quiet supprime Fortio stdout, -json écrit fichier
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
+    # 3 exec séparés — image fortio scratch (aucun shell/tool), sidecar
+    # busybox 'helper' partage volume /tmp emptyDir pour rm+cat.
+    # (a) supprimer résultat précédent via helper (best-effort)
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c helper -- rm -f /tmp/fortio-result.json 2>/dev/null || true
+    # (b) run silencieux fortio, -quiet supprime Fortio stdout, -json écrit fichier
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
       -qps "$rps" -c 200 -t 120s \
       -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
       -json /tmp/fortio-result.json \
       "$SUT_URL/$endpoint" >/dev/null 2>&1 || true
-    # (c) récup single burst — fichier terminé
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- cat /tmp/fortio-result.json \
+    # (c) récup single burst via helper — fichier terminé
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c helper -- cat /tmp/fortio-result.json \
       > "$RESULTS/${endpoint:-root}-${rps}rps.json" 2>/dev/null || echo "  (partial)"
     sleep 15
   done

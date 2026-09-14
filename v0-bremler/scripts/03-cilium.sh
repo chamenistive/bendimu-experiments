@@ -59,13 +59,13 @@ SUT_URL="http://sut-bremler.bendimu-sut.svc.cluster.local:8080"
 for endpoint in "" "data10kb" "data1mb"; do
   for rps in 100 500 1000 2000 4000 8000 12800; do
     echo "→ endpoint=/$endpoint rps=$rps"
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- rm -f /tmp/fortio-result.json 2>/dev/null || true
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c helper -- rm -f /tmp/fortio-result.json 2>/dev/null || true
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
       -qps "$rps" -c 200 -t 120s \
       -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
       -json /tmp/fortio-result.json \
       "$SUT_URL/$endpoint" >/dev/null 2>&1 || true
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- cat /tmp/fortio-result.json \
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c helper -- cat /tmp/fortio-result.json \
       > "$RESULTS/${endpoint:-root}-${rps}rps.json" 2>/dev/null || echo "  (partial)"
     sleep 15
   done

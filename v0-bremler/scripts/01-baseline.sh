@@ -50,7 +50,11 @@ EOF
 
 kubectl -n bendimu-sut rollout status deployment/sut-bremler --timeout=180s
 
-# 2. Fortio DaemonSet sur node pool load
+# 2. Fortio DaemonSet sur node pool load.
+# Note : image fortio est scratch (uniquement le binaire fortio, pas de shell,
+# pas de /tmp, pas de cat/rm/ls). On ajoute :
+#   - volume emptyDir partagé pour que fortio puisse écrire ses résultats
+#   - sidecar busybox pour extraction (cat, rm) via kubectl exec -c helper
 cat <<'EOF' | kubectl apply -f -
 apiVersion: apps/v1
 kind: DaemonSet
@@ -73,6 +77,19 @@ spec:
             requests: { cpu: "2", memory: "1Gi" }
             limits:   { cpu: "3", memory: "2Gi" }
           ports: [{ containerPort: 8080 }]
+          volumeMounts:
+            - { name: results, mountPath: /tmp }
+        - name: helper
+          image: busybox:1.36
+          command: ["sh", "-c", "sleep infinity"]
+          resources:
+            requests: { cpu: "50m", memory: "32Mi" }
+            limits:   { cpu: "200m", memory: "128Mi" }
+          volumeMounts:
+            - { name: results, mountPath: /tmp }
+      volumes:
+        - name: results
+          emptyDir: {}
 EOF
 kubectl -n bendimu-load rollout status ds/fortio --timeout=120s
 
@@ -83,13 +100,13 @@ SUT_URL="http://sut-bremler.bendimu-sut.svc.cluster.local:8080"
 for endpoint in "" "data10kb" "data1mb"; do
   for rps in 100 500 1000 2000 4000 8000 12800; do
     echo "→ endpoint=/$endpoint rps=$rps"
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- rm -f /tmp/fortio-result.json 2>/dev/null || true
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c helper -- rm -f /tmp/fortio-result.json 2>/dev/null || true
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
       -qps "$rps" -c 200 -t 120s \
       -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
       -json /tmp/fortio-result.json \
       "$SUT_URL/$endpoint" >/dev/null 2>&1 || true
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- cat /tmp/fortio-result.json \
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c helper -- cat /tmp/fortio-result.json \
       > "$RESULTS/${endpoint:-root}-${rps}rps.json" 2>/dev/null || echo "  (partial)"
     sleep 15
   done
