@@ -31,9 +31,13 @@ spec:
     mode: STRICT
 EOF
 
-# 3. Vérif mTLS
+# 3. Vérif mTLS (istioctl-1.22 : commande "authn" retirée dans Istio 1.23+,
+# on utilise donc explicitement le binaire 1.22 installé en local)
 sleep 15
-istioctl authn tls-check "$(kubectl -n bendimu-sut get pod -l app=sut-bremler -o jsonpath='{.items[0].metadata.name}')" \
+ISTIOCTL_122="$(command -v istioctl-1.22 || echo "$HOME/.local/bin/istioctl-1.22")"
+[[ -x "$ISTIOCTL_122" ]] || { echo "istioctl-1.22 absent, voir docs/00 §2.2"; exit 1; }
+"$ISTIOCTL_122" authn tls-check \
+  "$(kubectl -n bendimu-sut get pod -l app=sut-bremler -o jsonpath='{.items[0].metadata.name}')" \
   sut-bremler.bendimu-sut.svc.cluster.local || {
   echo "❌ tls-check échoué — voir docs/05 §F1"; exit 1;
 }
