@@ -7,6 +7,65 @@
 
 ---
 
+## Session Sep 14 2026 — Tentative reprise V0 (échec auth) + fix 00-provision.sh
+
+**Statut final : ⏸️ Reprise V0 avortée — auth gcloud expirée depuis pause. Script fixé pour prochaine tentative.**
+
+### Opérations
+- Tentative `bash v0-bremler/scripts/00-provision.sh` par user
+- Script s'est arrêté silencieux après `🔍 Vérification quotas GCP` (quota-check.sh interne bloqué par gcloud auth expiré, exit propagé via `set -e`)
+- Ensuite user a tenté `kubectl -n bendimu-load get pod` → `Reauthentication failed. cannot prompt during non-interactive execution`
+- FORTIO_POD vide → tests data1mb tous `error: pod, type/name or --filename must be specified`
+
+### Erreurs révélées
+- **E12** : `Reauthentication failed. cannot prompt during non-interactive execution` — sessions gcloud ~1h30 window dépassée (session précédente pause = 2 jours)
+- **E13** : `00-provision.sh` avait bugs latents : (a) pas de auth pre-check → silent fail à quota-check ; (b) chicken-and-egg terraform apply pré-namespaces jamais résolu dans script (uniquement en manuel session précédente) ; (c) Cilium `cluster.name` non override → refuse >32 chars ; (d) `istioctl-1.22` via `which` sans fallback path
+
+### Fix appliqué (commit `29096ab`)
+`v0-bremler/scripts/00-provision.sh` refactoré :
+1. **§0 Auth pre-check** : `gcloud auth print-access-token` + ADC + set-quota-project. Exit early avec message clair si expiré.
+2. **§2a Terraform 2-step** : `terraform apply -target=module.gke` d'abord.
+3. **§4 Namespaces créés AVANT full apply** : `bendimu-sut` + `bendimu-load`.
+4. **§2b Full apply** : PodMonitoring + alert policy sans plus casser sur `pm_envoy`.
+5. **§5 Cilium** : `--set cluster.name="$CLUSTER_NAME_V0"` (fixe E4).
+6. **§6 Istio** : `command -v istioctl-1.22 || ~/.local/bin/istioctl-1.22` (portable).
+
+### Reprise (prochaine session, corrigée)
+
+```bash
+# 1. Ré-auth OBLIGATOIRE (session > 1h30 après pause)
+gcloud auth login stive.chameni@facsciences-uy1.cm
+gcloud auth application-default login  # si tokens ADC aussi expirés
+gcloud auth application-default set-quota-project bendimu-mesh-bench
+
+# 2. Verify cluster absent
+gcloud container clusters list --project=bendimu-mesh-bench
+
+# 3. Script 00-provision fixé (auth pre-check préviendra silent fail)
+cd ~/Desktop/bendimu-experiments
+bash v0-bremler/scripts/00-provision.sh
+# Répondra 'y' au prompt "Continuer avec apply cluster ? [y/N]"
+
+# 4. Après cluster + Cilium + Istio OK → rerun 5 partiels data1mb :
+source .env
+FORTIO_POD=$(kubectl -n bendimu-load get pod -l app=fortio -o jsonpath='{.items[0].metadata.name}')
+# NOTE : Fortio et SUT sont créés par 01-baseline.sh, PAS par 00-provision.sh !
+# → Il faut d'abord :
+#   bash v0-bremler/scripts/01-baseline.sh  (relance TOUT baseline)
+# OU juste déployer Fortio + SUT manuellement avant rerun partiels.
+```
+
+**⚠️ Note importante** : `00-provision.sh` déploie cluster + Cilium + Istio, mais PAS le SUT `sut-bremler` ni le DS Fortio. Ces derniers sont créés par `01-baseline.sh` (lignes 12-77). Pour rerun uniquement les 5 partiels data1mb sans refaire tous les 21 tests, il faut soit :
+- **Option A** (simple) : relancer `01-baseline.sh` complet (~50 min avec DNS fix, tous 21 devraient passer)
+- **Option B** (chirurgical) : extraire section SUT+Fortio de 01-baseline.sh, la deployer, puis rerun uniquement les 5 partiels via boucle for
+
+**Recommandé** : Option A avec DNS fix — teste complet et valide fix par la même occasion.
+
+### Commit associé
+- `29096ab` : `fix(v0/00-provision): auth pre-check + 2-step apply + Cilium cluster.name`
+
+---
+
 ## Session Sep 12 → Sep 14 2026 — Bootstrap GCP + V0 provision + T0 baseline
 
 **Statut final : ⏸️ Pause après T0 baseline. Cluster V0 destroy. Bootstrap conservé.**
