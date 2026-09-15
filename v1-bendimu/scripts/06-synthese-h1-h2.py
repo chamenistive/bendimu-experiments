@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """V1 synthèse — évalue H1 (réseau) et H2 (applicatif) depuis T0..T3."""
+from __future__ import annotations
 
 import json
 import pathlib

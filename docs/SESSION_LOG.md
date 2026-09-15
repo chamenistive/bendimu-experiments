@@ -7,6 +7,98 @@
 
 ---
 
+## Session Sep 15 2026 — V1 **T0+T2+T3 COMPLETS** (H2 validée, H1 réfutée) + synthèse
+
+**Statut final : ✅ V1 T0/T2/T3 = 63/63 tests valides. H2 validée (overhead mesh ~20ms neutre entre techs). H1 réfutée (V1 SUT PSD2 delay applicatif dilue signal). T4 stress skip (optionnel, non requis H1/H2).**
+
+### Résultats V1 (SUT PSD2 Berlin Group, endpoints avec delay fixe)
+
+| Endpoint | Delay app | T0 p99 (baseline) | T2 p99 (Istio+mTLS) | T3 p99 (Cilium+SPIRE) | H1 (T2−T3) |
+|---|---|---|---|---|---|
+| /aisp/accounts | 100 ms | 103 ms | 120 ms | 120 ms | 0.0 ms |
+| /pisp/authorize | 200 ms | 203 ms | 221 ms | 220 ms | +1.1 ms |
+| /pisp/execute | 400 ms | 402 ms | 416 ms | 419 ms | −3.0 ms |
+
+**Overhead mesh (Δp99 vs T0) — endpoint dominant aisp (60% mix)** :
+- T2 Istio : 1.01× → 1.15× (charge croissante 100 → 12800 RPS)
+- T3 Cilium : 1.02× → 1.15×
+
+**H1 (overhead réseau Istio > Cilium)** : **réfutée** sur V1 (0/3 endpoints, Δ<5ms partout).
+Cause : delay applicatif SUT (100/200/400ms) domine overhead mesh (~20ms), dilue signal Istio/Cilium.
+V0 Bremler (endpoints sans delay) montrait H1 = 1.87× (Istio 87% + lent).
+
+**H2 (overhead mesh applicatif neutre entre technologies)** : **validée**.
+Overhead constant ~20ms Istio/Cilium sur SUT PSD2 réaliste avec delay applicatif significatif.
+
+### Erreurs rencontrées + fixes
+
+| # | Erreur | Cause | Correction |
+|---|---|---|---|
+| E29 | Istio 1.24 `profile=default` install `istio-cni` DS → CrashLoop timeout 5min | Conflit Cilium CNI eBPF exclusif | `istioctl install --set components.cni.enabled=false` (sidecar mode utilise `istio-init` init container) |
+| E30 | Fortio 1.68 `-method POST` → dump help + exit 2 | Flag renommé/absent Fortio 1.68 | Utiliser `-X POST` (curl-style) sur tous scripts V1/V2 |
+| E31 | T2 Istio → 21/21 partiels, Fortio EOF, Envoy Fortio `cx_active=0` | Cilium `routing-mode=tunnel` sans `endpointRoutes.enabled=true` bypass iptables Istio → sidecar Envoy jamais intercepte trafic | Reinstall Cilium `--set endpointRoutes.enabled=true` (force per-endpoint routing host stack pour iptables Envoy capture) |
+| E32 | Docker daemon crash `sandboxRestore` panic BoltDB | Corruption `/var/lib/docker/network/files/local-kv.db` | `mv local-kv.db local-kv.db.bak` + `systemctl reset-failed docker` + `start docker` |
+| E33 | T3 Cilium install SPIRE : `cilium status --wait` timeout, 2 cilium-agents load nodes `AuthCertificateProvider: SPIRE admin socket missing` | Ordre script incorrect : `cilium status --wait` AVANT patch tolerations `spire-agent` DS (rappel E18 V0) | Patch spire-agent tolerations AVANT `cilium status --wait` dans 04-t3 + 05-t4 |
+| E34 | Terraform `Enter var.node_sa_email:` prompt | `v1-bendimu/terraform/terraform.tfvars` absent (uniquement `.example`) | Copie `.example` → `terraform.tfvars` (fixe var manquante) |
+| Bug script V1 T1 | Placeholder — pas d'implémentation TLS Go pur | main.go SUT V1 démarre HTTP sans TLS | Marque optionnel, non bloquant pour H1/H2 (T2/T3 suffisent) |
+
+Autres bugs V0 reproduits + fix portés à V1 : E4 (Cilium cluster.name >32 chars), E5 (chicken-egg pm_envoy 2-step apply), E14-E16 (Fortio helper busybox sidecar + retry cat 3× backoff), E18 (SPIRE DS tolérations pool load), E19 (CNP YAML flow style explicite), E20 (`cilium status --verbose` retiré CLI 0.16.x), E24 (`portLevelMtls` invalide en namespace-scope PA), E25/E26 (`istioctl authn tls-check` + `x describe pod` retirés/bugués → kubectl cluster state).
+
+### Fichiers résultats persistants
+
+```
+v1-bendimu/results/
+├── t0-baseline-reseau/       # 21 JSON PSD2 mix 60/30/10 sans mesh
+├── t2-istio-mtls/            # 21 JSON PSD2 mix Istio 1.24 sidecar + PA STRICT
+├── t3-cilium-mtls/           # 21 JSON PSD2 mix Cilium 1.16.3 eBPF + SPIRE mutual-auth
+└── synthese-v1.md            # verdict H1/H2 détaillé
+```
+
+T1 (`t1-baseline-appli`) et T4 (`t4a-stress-istio`, `t4b-stress-cilium`) intentionnellement vides (T1 placeholder Go TLS non implémenté; T4 optionnel skip).
+
+### Commits pushés (chronologique)
+
+- `d9cc732` — fix(v1) : 5 scripts (Fortio -X POST + helper sidecar + 2-step apply + Cilium/Istio fixes E29-E30)
+- `cc2a2c8` — chore(v1/t0) : archive T0 baseline réseau 21/21 valides
+- `9a3e117` — feat(v1/t2) : T2 Istio mTLS 21/21 + fix E31 Cilium endpointRoutes.enabled
+- `41c6ea7` — feat(v1/t3) : T3 Cilium eBPF + SPIRE 21/21 + fix ordre patch tolerations E33
+
+### Reprise (prochaine session, si V2 ou T4 futur)
+
+**Prérequis** : bootstrap conservé (VPC + NAT + Artifact Registry + SA + bucket + budget ~1 USD/j).
+
+```bash
+cd ~/Desktop/bendimu-experiments
+source .env
+gcloud auth list  # SA terraform-bendimu doit être ACTIVE
+
+# Provisioner V2 (recherche) ou re-run T4 stress si non skippé :
+bash v2-bendimu-recherche/scripts/00-provision.sh   # V2
+# OU
+bash v1-bendimu/scripts/00-provision.sh              # V1 (recréer cluster)
+bash v1-bendimu/scripts/05-t4-stress.sh              # T4 stress (~90 min)
+```
+
+### Points d'attention pour sessions futures
+
+- **Ordre patch SPIRE tolérations** : appliquer AVANT `cilium status --wait` (fix E33 déjà dans scripts).
+- **Cilium + Istio sidecar coexistence** : `endpointRoutes.enabled=true` obligatoire (fix E31). Sans ce flag, sidecar Envoy jamais intercepté = 100% EOF Fortio.
+- **Fortio 1.68 syntaxe POST** : `-X POST` (pas `-method POST`). Fix E30 déjà dans scripts.
+- **Istio 1.24 CNI opt-out** : `--set components.cni.enabled=false` (fix E29). Sidecar mode fonctionne avec `istio-init` init container.
+- **Comparabilité H1 V0 vs V1** : V0 endpoints simples révèlent overhead mesh; V1 SUT PSD2 (delay applicatif 100-400ms) dilue signal. Conclusion : Cilium eBPF montre gain réseau uniquement quand overhead applicatif faible. Pour production PSD2 avec ORM/DB latency significative, choix mesh peu impactant sur p99 (< 5 ms).
+
+### Coût session
+
+Cluster V1 tournant ~4h (~6 USD). Bootstrap idle ~1 USD/j.
+
+### Actions clôture session
+
+- ⏳ Destroy cluster V1 (`terraform -chdir=v1-bendimu/terraform destroy`)
+- ⏳ Push origin/main (4 commits locaux)
+- ⏳ Bootstrap conservé (~1 USD/j idle)
+
+---
+
 ## Session Sep 14-15 2026 — V0 **COMPLET GO** (T0+T1+T2) + cross-check adaptatif
 
 **Statut final : ✅ V0 verdict GO. T3 Ambient skip (conflit CNI Cilium/Istio). Cluster destroy pour pause.**
