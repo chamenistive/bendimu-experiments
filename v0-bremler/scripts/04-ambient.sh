@@ -7,8 +7,9 @@ RESULTS="$SCRIPT_DIR/../results/t3-ambient"
 mkdir -p "$RESULTS"
 
 echo "==> V0 T3 Istio Ambient (extension optionnelle)"
-read -rp "Ce run est optionnel (Bendimu se concentre DPA-1 vs DPA-3). Continuer ? [y/N] " ans
-[[ "$ans" == "y" || "$ans" == "Y" ]] || { echo "Skip."; exit 0; }
+# Skip prompt : run non-interactif via CI ou pipeline
+# Pour éviter run : commenter le call bash script depuis wrapper.
+echo "Extension Bendimu — Bremler-Barr DPA-1 vs DPA-3 baseline."
 
 # 1. Cleanup état T2 (retirer CiliumNetworkPolicy L7)
 kubectl -n bendimu-sut delete ciliumnetworkpolicy sut-bremler-l7-auth --ignore-not-found
