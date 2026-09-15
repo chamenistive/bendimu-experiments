@@ -109,6 +109,33 @@ bash v1-bendimu/scripts/00-provision.sh
 - ✅ DNS fix systemd-resolved persist reboot
 - ✅ SESSION_LOG.md à jour, prêt reprise V1
 
+### Note sur `results/t3-ambient/` vide (intentionnel)
+
+Dossier créé par `mkdir -p` au démarrage script `04-ambient.sh`, mais rien écrit dedans car `istioctl install --set profile=ambient` a échoué avant la charge matrix :
+
+- Étape 3 script (install Ambient) : CNI DaemonSet + Ztunnel DaemonSet timeout 5 min
+- Cause : conflit avec Cilium (Cilium contrôle CNI et iptables via eBPF, `istio-cni` + `ztunnel` restent Pending/CrashLoopBackOff)
+- Étape 4-6 script (label ns, ztunnel check, charge matrix) : jamais atteintes (`set -e` exit sur erreur install)
+
+Script `04-ambient.sh` marqué **optionnel** en commentaire ligne 2 (« OPTIONNEL, non bloquant pour verdict V0 »). Cross-check GO obtenu sans T3. Dossier vide conservé pour cohérence structure `results/` + tracé git.
+
+### Alignement flowchart méthodologique `worfowmethodologie.png`
+
+Le flowchart du mémoire M2 définit **5 étapes** (0 réseau brut → 1 app vierge → 2 DPA1 → 3 DPA3 → 4 rupture). V0 (Bremler-Barr reproduction) couvre **3/5 étapes** (0, 2, 3). Étapes 1 (calibration app vierge) et 4 (épreuve rupture) **absentes du V0 intentionnellement** car V0 = ancrage paper Bremler-Barr 2024 (uniquement 3 conditions comparées), pas protocole Bendimu complet.
+
+**V1 réalisera les 5 étapes complètes** avec SUT PSD2 Open Banking :
+
+| Script V1 | Étape flowchart | Objet |
+|---|---|---|
+| `01-t0-baseline-reseau.sh` | étape 0 | Baseline réseau (identique V0 T0 mais SUT PSD2) |
+| `02-t1-baseline-appli.sh` | **étape 1** | Calibration app vierge (`step1calibration.json`, référence variabilité sans mesh) |
+| `03-t2-istio-mtls.sh` | étape 2 | DPA1 Istio sidecar mTLS PSD2 |
+| `04-t3-cilium-mtls.sh` | étape 3 | DPA3 Cilium eBPF natif + WireGuard optionnel |
+| `05-t4-stress.sh` | **étape 4** | Épreuve rupture (PASSE 1 DPA-1 A, PASSE 2 DPA-3 B → `robustesse.md`) |
+| `06-synthese-h1-h2.py` | synthèse | H1 (overhead réseau) + H2 (overhead applicatif) |
+
+Donc étapes 1 + 4 seront couvertes en V1 avec chaîne PSD2 réelle (pas re-run au V0).
+
 ### Commits pushés session Sep 14-15 (chronologique)
 
 - `1fcbe74` — drop portLevelMtls (PA namespace-scope invalide)
