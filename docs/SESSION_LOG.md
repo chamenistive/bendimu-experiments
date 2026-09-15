@@ -99,6 +99,34 @@ bash v1-bendimu/scripts/00-provision.sh
 
 ~10h cluster tournant (~15 USD Sep 14-15) + storage négligeable. Bootstrap idle ~1 USD/j.
 
+### Actions clôture session (post-cross-check GO)
+
+- ✅ Commit résultats T2 + cross-check + SESSION_LOG (`78ef302`) pushé origin/main
+- ✅ `terraform -chdir=v0-bremler/terraform destroy -auto-approve` exécuté
+- ✅ `gcloud container clusters list` → vide (cluster GKE bremler-v0 supprimé)
+- ✅ Bootstrap conservé (VPC + NAT + Artifact Registry + SA + bucket + budget) → ~1 USD/j idle
+- ✅ SA JSON key `~/.config/gcloud/bendimu-terraform-key.json` conservée pour V1
+- ✅ DNS fix systemd-resolved persist reboot
+- ✅ SESSION_LOG.md à jour, prêt reprise V1
+
+### Commits pushés session Sep 14-15 (chronologique)
+
+- `1fcbe74` — drop portLevelMtls (PA namespace-scope invalide)
+- `8fbeb5b` — remplacer istioctl authn tls-check par x describe pod
+- `024de13` — istioctl-1.22 pour authn tls-check (retiré Istio 1.23+)
+- `6424530` — validation mTLS via cluster state (istioctl x describe bug GKE 1.35)
+- `34f96c9` — Fortio écrit résultats dans pod filesystem + cat unique
+- `c4b5841` — 3 kubectl exec séparés (image fortio scratch pas de sh)
+- `2f36441` — sidecar busybox helper + emptyDir /tmp partagé
+- `207fb9d` — archive Istio benchmark T1 21/21
+- `7098d79` — CiliumNetworkPolicy YAML flow style
+- `b4b4836` — cilium status --verbose retiré CLI 0.16.x
+- `991a84c` — archive Cilium T2 21/21 + SPIRE mutual-auth
+- `ad353da` — 04-ambient retire prompt read
+- `4db88ea` — cross-check compat Python 3.8
+- `66a00b6` — cross-check verdict adaptatif + parser mixed-format
+- `78ef302` — V0 GO complet + SESSION_LOG
+
 ---
 
 ## Session Sep 14 2026 (soir) — T0 baseline **COMPLET 21/21** + fixes durables
