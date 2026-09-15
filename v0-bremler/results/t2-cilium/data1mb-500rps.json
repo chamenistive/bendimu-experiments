@@ -1,0 +1,531 @@
+{
+  "RunType": "HTTP",
+  "Labels": "sut-bremler.bendimu-sut.svc.cluster.local:8080/data1mb , fortio-8nmjg",
+  "StartTime": "2026-09-15T00:57:48.907537428Z",
+  "RequestedQPS": "500",
+  "RequestedDuration": "2m0s",
+  "ActualQPS": 498.1418873963898,
+  "ActualDuration": 120423520924,
+  "NumThreads": 200,
+  "Version": "1.68.0",
+  "DurationHistogram": {
+    "Count": 59988,
+    "Min": 0.00220848,
+    "Max": 0.045270691,
+    "Sum": 232.58444761400003,
+    "Avg": 0.0038771828968126964,
+    "StdDev": 0.0016502046496215726,
+    "Data": [
+      {
+        "Start": 0.00220848,
+        "End": 0.003,
+        "Percent": 16.94672267786891,
+        "Count": 10166
+      },
+      {
+        "Start": 0.003,
+        "End": 0.004,
+        "Percent": 74.66326598653065,
+        "Count": 34623
+      },
+      {
+        "Start": 0.004,
+        "End": 0.005,
+        "Percent": 90.26972061078882,
+        "Count": 9362
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 94.78895779155832,
+        "Count": 2711
+      },
+      {
+        "Start": 0.006,
+        "End": 0.007,
+        "Percent": 96.52763886110556,
+        "Count": 1043
+      },
+      {
+        "Start": 0.007,
+        "End": 0.008,
+        "Percent": 97.34780289391212,
+        "Count": 492
+      },
+      {
+        "Start": 0.008,
+        "End": 0.009000000000000001,
+        "Percent": 97.92125091685004,
+        "Count": 344
+      },
+      {
+        "Start": 0.009000000000000001,
+        "End": 0.01,
+        "Percent": 98.34800293392011,
+        "Count": 256
+      },
+      {
+        "Start": 0.01,
+        "End": 0.011,
+        "Percent": 98.79309195172368,
+        "Count": 267
+      },
+      {
+        "Start": 0.011,
+        "End": 0.012,
+        "Percent": 99.14482896579315,
+        "Count": 211
+      },
+      {
+        "Start": 0.012,
+        "End": 0.014,
+        "Percent": 99.55657798226312,
+        "Count": 247
+      },
+      {
+        "Start": 0.014,
+        "End": 0.016,
+        "Percent": 99.7332799893312,
+        "Count": 106
+      },
+      {
+        "Start": 0.016,
+        "End": 0.018000000000000002,
+        "Percent": 99.84330199373208,
+        "Count": 66
+      },
+      {
+        "Start": 0.018000000000000002,
+        "End": 0.02,
+        "Percent": 99.90498099619924,
+        "Count": 37
+      },
+      {
+        "Start": 0.02,
+        "End": 0.025,
+        "Percent": 99.96832699873308,
+        "Count": 38
+      },
+      {
+        "Start": 0.025,
+        "End": 0.03,
+        "Percent": 99.98499699939988,
+        "Count": 10
+      },
+      {
+        "Start": 0.03,
+        "End": 0.035,
+        "Percent": 99.9916649996666,
+        "Count": 4
+      },
+      {
+        "Start": 0.035,
+        "End": 0.04,
+        "Percent": 99.99666599986664,
+        "Count": 3
+      },
+      {
+        "Start": 0.04,
+        "End": 0.045,
+        "Percent": 99.99833299993333,
+        "Count": 1
+      },
+      {
+        "Start": 0.045,
+        "End": 0.045270691,
+        "Percent": 100,
+        "Count": 1
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.003572682898651186
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.00402157658619953
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.004982717368083743
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.011588246445497637
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.019838486486486586
+      }
+    ]
+  },
+  "ErrorsDurationHistogram": {
+    "Count": 0,
+    "Min": 0,
+    "Max": 0,
+    "Sum": 0,
+    "Avg": 0,
+    "StdDev": 0,
+    "Data": null
+  },
+  "Exactly": 0,
+  "Jitter": true,
+  "Uniform": true,
+  "NoCatchUp": true,
+  "RunID": 0,
+  "AccessLoggerInfo": "",
+  "ID": "2026-09-15-005747_sut_bremler_bendimu_sut_svc_cluster_local_8080_data1mb_fortio_8nmjg",
+  "RetCodes": {
+    "200": 59988
+  },
+  "IPCountMap": {
+    "34.118.234.187:8080": 200
+  },
+  "Insecure": false,
+  "MTLS": false,
+  "CACert": "",
+  "Cert": "",
+  "Key": "",
+  "UnixDomainSocket": "",
+  "URL": "http://sut-bremler.bendimu-sut.svc.cluster.local:8080/data1mb",
+  "NumConnections": 1,
+  "Compression": false,
+  "DisableFastClient": false,
+  "HTTP10": false,
+  "H2": false,
+  "DisableKeepAlive": false,
+  "AllowHalfClose": false,
+  "FollowRedirects": false,
+  "Resolve": "",
+  "HTTPReqTimeOut": 3000000000,
+  "UserCredentials": "",
+  "ContentType": "",
+  "Payload": "",
+  "MethodOverride": "",
+  "LogErrors": true,
+  "SequentialWarmup": false,
+  "ConnReuseRange": [
+    0,
+    0
+  ],
+  "NoResolveEachConn": false,
+  "Offset": 0,
+  "Resolution": 0.001,
+  "Sizes": {
+    "Count": 59988,
+    "Min": 1048764,
+    "Max": 1048815,
+    "Sum": 62913646000,
+    "Avg": 1048770.5207708208,
+    "StdDev": 3.26788450639902,
+    "Data": [
+      {
+        "Start": 1048764,
+        "End": 1048815,
+        "Percent": 100,
+        "Count": 59988
+      }
+    ]
+  },
+  "HeaderSizes": {
+    "Count": 59988,
+    "Min": 173,
+    "Max": 173,
+    "Sum": 10377924,
+    "Avg": 173,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 173,
+        "End": 173,
+        "Percent": 100,
+        "Count": 59988
+      }
+    ]
+  },
+  "Sockets": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "SocketCount": 200,
+  "ConnectionStats": {
+    "Count": 200,
+    "Min": 0.000143548,
+    "Max": 0.008411166,
+    "Sum": 0.5643539759999997,
+    "Avg": 0.0028217698799999987,
+    "StdDev": 0.002913203324606876,
+    "Data": [
+      {
+        "Start": 0.000143548,
+        "End": 0.001,
+        "Percent": 45.5,
+        "Count": 91
+      },
+      {
+        "Start": 0.001,
+        "End": 0.002,
+        "Percent": 65.5,
+        "Count": 40
+      },
+      {
+        "Start": 0.003,
+        "End": 0.004,
+        "Percent": 66.5,
+        "Count": 2
+      },
+      {
+        "Start": 0.004,
+        "End": 0.005,
+        "Percent": 67.5,
+        "Count": 2
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 74.5,
+        "Count": 14
+      },
+      {
+        "Start": 0.006,
+        "End": 0.007,
+        "Percent": 81,
+        "Count": 13
+      },
+      {
+        "Start": 0.007,
+        "End": 0.008,
+        "Percent": 96.5,
+        "Count": 31
+      },
+      {
+        "Start": 0.008,
+        "End": 0.008411166,
+        "Percent": 100,
+        "Count": 7
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.001225
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.006076923076923077
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.007580645161290323
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.00829369
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.0083994184
+      }
+    ]
+  },
+  "AbortOn": 0
+}

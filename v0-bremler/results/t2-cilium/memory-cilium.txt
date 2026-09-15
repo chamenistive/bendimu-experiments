@@ -1,0 +1,7 @@
+cilium-7c8g8   11m    98Mi    
+cilium-99ql8   38m    120Mi   
+cilium-gt44w   467m   121Mi   
+cilium-m7lm4   529m   120Mi   
+cilium-nc7fw   511m   120Mi   
+cilium-pljg4   399m   120Mi   
+cilium-r549v   385m   120Mi   
