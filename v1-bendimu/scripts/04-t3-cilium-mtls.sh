@@ -17,12 +17,36 @@ kubectl -n bendimu-sut-v1 rollout status deployment/sut-v1 --timeout=180s
 kubectl -n bendimu-load   rollout status ds/fortio --timeout=120s
 kubectl delete peerauthentication default -n bendimu-sut-v1 --ignore-not-found
 
-# 2. Cilium mutual auth
-cilium config set enable-mutual-auth true
-kubectl -n kube-system rollout restart daemonset/cilium
-kubectl -n kube-system rollout status daemonset/cilium --timeout=300s
+# 2. Cilium mutual auth + SPIRE (fix E17 : mutual-auth sans SPIRE = AuthCertificateProvider missing)
+#    Reinstall Cilium avec install.enabled=true pour déployer SPIRE bundled + enable-mutual-auth
+cilium uninstall --wait 2>/dev/null || true
+sleep 10
+cilium install --version "$V1_CILIUM_VERSION" \
+  --set cluster.name="$CLUSTER_NAME_V1" \
+  --set kubeProxyReplacement=true \
+  --set socketLB.hostNamespaceOnly=true \
+  --set image.useDigest=false \
+  --set operator.image.useDigest=false \
+  --set mtu=1450 \
+  --set routingMode=tunnel \
+  --set tunnelProtocol=vxlan \
+  --set hubble.enabled=true \
+  --set hubble.metrics.enabled='{dns,drop,tcp,flow,port-distribution,icmp,http}' \
+  --set prometheus.enabled=true \
+  --set operator.prometheus.enabled=true \
+  --set authentication.mutual.spire.enabled=true \
+  --set authentication.mutual.spire.install.enabled=true
+cilium status --wait --wait-duration 5m
 
-# 3. CiliumNetworkPolicy L7 PSD2 + auth
+# Fix E18 : patcher DS spire-agent avec tolération pool load
+kubectl -n cilium-spire patch daemonset spire-agent --type=json -p='[
+  {"op":"add","path":"/spec/template/spec/tolerations","value":[
+    {"key":"bendimu.role","operator":"Equal","value":"load","effect":"NoSchedule"}
+  ]}
+]' 2>/dev/null || echo "  (spire-agent DS tolérations déjà présentes ou ns différent)"
+kubectl -n cilium-spire rollout status daemonset/spire-agent --timeout=180s 2>/dev/null || true
+
+# 3. CiliumNetworkPolicy L7 PSD2 + auth (fix E19 : flow style explicit)
 cat <<'EOF' | kubectl apply -f -
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -41,16 +65,29 @@ spec:
         - ports: [{ port: "8080", protocol: TCP }]
           rules:
             http:
-              - method: "GET",  path: "/aisp/accounts"
-              - method: "POST", path: "/pisp/authorize"
-              - method: "POST", path: "/pisp/execute"
-              - method: "GET",  path: "/healthz"
+              - { method: "GET",  path: "/aisp/accounts" }
+              - { method: "POST", path: "/pisp/authorize" }
+              - { method: "POST", path: "/pisp/execute" }
+              - { method: "GET",  path: "/healthz" }
 EOF
 
 sleep 15
 cilium hubble observe --last 20 --type l7 || true
 
-# 4. Palier PSD2 60/30/10
+# Retrieve JSON avec retry 3× backoff (fix E16)
+retrieve_json() {
+  local pod=$1 remote=$2 local=$3
+  for attempt in 1 2 3; do
+    if kubectl -n bendimu-load exec "$pod" -c helper -- cat "$remote" > "$local" 2>/dev/null; then
+      [[ -s "$local" ]] && return 0
+    fi
+    sleep $((attempt * 2))
+  done
+  echo "  (partial retrieve $local)"
+  return 1
+}
+
+# 4. Palier PSD2 60/30/10 (fix E14-E16 : helper sidecar + retry)
 FORTIO_POD=$(kubectl -n bendimu-load get pod -l app=fortio -o jsonpath='{.items[0].metadata.name}')
 SUT="http://sut-v1.bendimu-sut-v1.svc.cluster.local:8080"
 
@@ -60,16 +97,28 @@ for total_rps in 100 500 1000 2000 4000 8000 12800; do
   exec_rps=$((total_rps * 10 / 100))
 
   echo "→ total=${total_rps} RPS"
-  kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-    -qps "$aisp_rps" -c 128 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-    -json - "$SUT/aisp/accounts" > "$RESULTS/aisp-${total_rps}rps.json" 2>&1 &
-  kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-    -qps "$auth_rps" -c 64 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-    -method POST -json - "$SUT/pisp/authorize" > "$RESULTS/authorize-${total_rps}rps.json" 2>&1 &
-  kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-    -qps "$exec_rps" -c 64 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-    -method POST -json - "$SUT/pisp/execute" > "$RESULTS/execute-${total_rps}rps.json" 2>&1 &
-  wait
+
+  kubectl -n bendimu-load exec "$FORTIO_POD" -c helper -- \
+    rm -f /tmp/aisp.json /tmp/authorize.json /tmp/execute.json 2>/dev/null || true
+
+  kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+    -qps "$aisp_rps" -c 128 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+    -json /tmp/aisp.json "$SUT/aisp/accounts" >/dev/null 2>&1 &
+  PID_AISP=$!
+  kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+    -qps "$auth_rps" -c 64 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+    -X POST -json /tmp/authorize.json "$SUT/pisp/authorize" >/dev/null 2>&1 &
+  PID_AUTH=$!
+  kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+    -qps "$exec_rps" -c 64 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+    -X POST -json /tmp/execute.json "$SUT/pisp/execute" >/dev/null 2>&1 &
+  PID_EXEC=$!
+  wait $PID_AISP $PID_AUTH $PID_EXEC || true
+
+  retrieve_json "$FORTIO_POD" /tmp/aisp.json      "$RESULTS/aisp-${total_rps}rps.json"      || true
+  retrieve_json "$FORTIO_POD" /tmp/authorize.json "$RESULTS/authorize-${total_rps}rps.json" || true
+  retrieve_json "$FORTIO_POD" /tmp/execute.json   "$RESULTS/execute-${total_rps}rps.json"   || true
+
   sleep 20
 done
 

@@ -16,7 +16,8 @@ kubectl -n bendimu-load   rollout restart ds/fortio
 kubectl -n bendimu-sut-v1 rollout status deployment/sut-v1 --timeout=180s
 kubectl -n bendimu-load   rollout status ds/fortio --timeout=120s
 
-# 2. PeerAuth + BackendConfig health check
+# 2. PeerAuth STRICT (fix E24 : portLevelMtls invalide en namespace-scope PA
+# — health checks auto-bypass via rewriteAppHTTPProbers)
 cat <<'EOF' | kubectl apply -f -
 apiVersion: security.istio.io/v1
 kind: PeerAuthentication
@@ -25,8 +26,6 @@ metadata:
   namespace: bendimu-sut-v1
 spec:
   mtls: { mode: STRICT }
-  portLevelMtls:
-    "15021": { mode: PERMISSIVE }
 ---
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
@@ -43,12 +42,31 @@ spec:
 EOF
 
 sleep 15
-istioctl authn tls-check "$(kubectl -n bendimu-sut-v1 get pod -l app=sut-v1 -o jsonpath='{.items[0].metadata.name}')" \
-  sut-v1.bendimu-sut-v1.svc.cluster.local || {
-  echo "❌ tls-check échoué — voir docs/05 §F1"; exit 1;
+# Validation mTLS (fix E25/E26 : istioctl authn tls-check + x describe pod retirés/bugués)
+# → 3 signaux cluster-state kubectl : pod 2/2 ready + PA STRICT + istiod up
+SUT_POD=$(kubectl -n bendimu-sut-v1 get pod -l app=sut-v1 -o jsonpath='{.items[0].metadata.name}')
+kubectl -n bendimu-sut-v1 get pod "$SUT_POD" -o jsonpath='{.status.containerStatuses[*].ready}' \
+  | grep -q "true true" || { echo "❌ SUT pod sidecar non ready"; exit 1; }
+kubectl -n bendimu-sut-v1 get peerauthentication default \
+  -o jsonpath='{.spec.mtls.mode}' | grep -q "STRICT" || { echo "❌ PA STRICT absent"; exit 1; }
+kubectl -n istio-system get deploy istiod -o jsonpath='{.status.readyReplicas}' \
+  | grep -qE "^[1-9]" || { echo "❌ istiod down"; exit 1; }
+echo "✓ mTLS STRICT validé (pod 2/2 + PA STRICT + istiod up)"
+
+# Retrieve JSON avec retry 3× backoff (fix E16)
+retrieve_json() {
+  local pod=$1 remote=$2 local=$3
+  for attempt in 1 2 3; do
+    if kubectl -n bendimu-load exec "$pod" -c helper -- cat "$remote" > "$local" 2>/dev/null; then
+      [[ -s "$local" ]] && return 0
+    fi
+    sleep $((attempt * 2))
+  done
+  echo "  (partial retrieve $local)"
+  return 1
 }
 
-# 3. Palier PSD2 60/30/10
+# 3. Palier PSD2 60/30/10 (fix E14-E16 : helper sidecar + retry)
 FORTIO_POD=$(kubectl -n bendimu-load get pod -l app=fortio -o jsonpath='{.items[0].metadata.name}')
 SUT="http://sut-v1.bendimu-sut-v1.svc.cluster.local:8080"
 
@@ -58,16 +76,28 @@ for total_rps in 100 500 1000 2000 4000 8000 12800; do
   exec_rps=$((total_rps * 10 / 100))
 
   echo "→ total=${total_rps} RPS"
-  kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-    -qps "$aisp_rps" -c 128 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-    -json - "$SUT/aisp/accounts" > "$RESULTS/aisp-${total_rps}rps.json" 2>&1 &
-  kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-    -qps "$auth_rps" -c 64 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-    -method POST -json - "$SUT/pisp/authorize" > "$RESULTS/authorize-${total_rps}rps.json" 2>&1 &
-  kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-    -qps "$exec_rps" -c 64 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-    -method POST -json - "$SUT/pisp/execute" > "$RESULTS/execute-${total_rps}rps.json" 2>&1 &
-  wait
+
+  kubectl -n bendimu-load exec "$FORTIO_POD" -c helper -- \
+    rm -f /tmp/aisp.json /tmp/authorize.json /tmp/execute.json 2>/dev/null || true
+
+  kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+    -qps "$aisp_rps" -c 128 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+    -json /tmp/aisp.json "$SUT/aisp/accounts" >/dev/null 2>&1 &
+  PID_AISP=$!
+  kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+    -qps "$auth_rps" -c 64 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+    -X POST -json /tmp/authorize.json "$SUT/pisp/authorize" >/dev/null 2>&1 &
+  PID_AUTH=$!
+  kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+    -qps "$exec_rps" -c 64 -t 120s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+    -X POST -json /tmp/execute.json "$SUT/pisp/execute" >/dev/null 2>&1 &
+  PID_EXEC=$!
+  wait $PID_AISP $PID_AUTH $PID_EXEC || true
+
+  retrieve_json "$FORTIO_POD" /tmp/aisp.json      "$RESULTS/aisp-${total_rps}rps.json"      || true
+  retrieve_json "$FORTIO_POD" /tmp/authorize.json "$RESULTS/authorize-${total_rps}rps.json" || true
+  retrieve_json "$FORTIO_POD" /tmp/execute.json   "$RESULTS/execute-${total_rps}rps.json"   || true
+
   sleep 20
 done
 

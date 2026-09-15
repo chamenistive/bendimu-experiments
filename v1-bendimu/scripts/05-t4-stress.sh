@@ -23,7 +23,20 @@ echo "==> V1 T4 stress convergent SÉQUENTIEL (Istio → Cilium, même cluster)"
 read -rp "Coût ~4 USD, durée ~90 min, non requis pour H1/H2. Continuer ? [y/N] " ans
 [[ "$ans" == "y" || "$ans" == "Y" ]] || { echo "Skip."; exit 0; }
 
-# --- Fonction bench ---
+# --- Retrieve JSON avec retry 3× backoff (fix E16) ---
+retrieve_json() {
+  local pod=$1 remote=$2 local=$3
+  for attempt in 1 2 3; do
+    if kubectl -n bendimu-load exec "$pod" -c helper -- cat "$remote" > "$local" 2>/dev/null; then
+      [[ -s "$local" ]] && return 0
+    fi
+    sleep $((attempt * 2))
+  done
+  echo "  (partial retrieve $local)"
+  return 1
+}
+
+# --- Fonction bench (fix E14-E16 : helper sidecar + retry) ---
 run_stress_bench() {
   local RESULTS=$1
   local LABEL=$2
@@ -39,16 +52,28 @@ run_stress_bench() {
     local exec_rps=$((total_rps * 10 / 100))
 
     echo "  → total=${total_rps} RPS (aisp=${aisp_rps}, auth=${auth_rps}, exec=${exec_rps})"
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-      -qps "$aisp_rps" -c 256 -t 180s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-      -json - "$SUT/aisp/accounts" > "$RESULTS/aisp-${total_rps}rps.json" 2>&1 &
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-      -qps "$auth_rps" -c 128 -t 180s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-      -method POST -json - "$SUT/pisp/authorize" > "$RESULTS/authorize-${total_rps}rps.json" 2>&1 &
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-      -qps "$exec_rps" -c 128 -t 180s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-      -method POST -json - "$SUT/pisp/execute" > "$RESULTS/execute-${total_rps}rps.json" 2>&1 &
-    wait
+
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c helper -- \
+      rm -f /tmp/aisp.json /tmp/authorize.json /tmp/execute.json 2>/dev/null || true
+
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+      -qps "$aisp_rps" -c 256 -t 180s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+      -json /tmp/aisp.json "$SUT/aisp/accounts" >/dev/null 2>&1 &
+    local PID_AISP=$!
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+      -qps "$auth_rps" -c 128 -t 180s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+      -X POST -json /tmp/authorize.json "$SUT/pisp/authorize" >/dev/null 2>&1 &
+    local PID_AUTH=$!
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+      -qps "$exec_rps" -c 128 -t 180s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+      -X POST -json /tmp/execute.json "$SUT/pisp/execute" >/dev/null 2>&1 &
+    local PID_EXEC=$!
+    wait $PID_AISP $PID_AUTH $PID_EXEC || true
+
+    retrieve_json "$FORTIO_POD" /tmp/aisp.json      "$RESULTS/aisp-${total_rps}rps.json"      || true
+    retrieve_json "$FORTIO_POD" /tmp/authorize.json "$RESULTS/authorize-${total_rps}rps.json" || true
+    retrieve_json "$FORTIO_POD" /tmp/execute.json   "$RESULTS/execute-${total_rps}rps.json"   || true
+
     sleep 30
   done
 
@@ -98,10 +123,21 @@ sleep 300
 echo ""
 echo "==> Install Cilium ${V1_CILIUM_VERSION} + mutual auth..."
 cilium install --version "${V1_CILIUM_VERSION}" \
+  --set cluster.name="$CLUSTER_NAME_V1" \
   --set kubeProxyReplacement=true \
+  --set socketLB.hostNamespaceOnly=true \
   --set authentication.mutual.spire.enabled=true \
+  --set authentication.mutual.spire.install.enabled=true \
   --set encryption.enabled=false
-cilium status --wait --wait-duration=180s
+cilium status --wait --wait-duration=300s
+
+# Fix E18 : patcher DS spire-agent avec tolération pool load
+kubectl -n cilium-spire patch daemonset spire-agent --type=json -p='[
+  {"op":"add","path":"/spec/template/spec/tolerations","value":[
+    {"key":"bendimu.role","operator":"Equal","value":"load","effect":"NoSchedule"}
+  ]}
+]' 2>/dev/null || true
+kubectl -n cilium-spire rollout status daemonset/spire-agent --timeout=180s 2>/dev/null || true
 
 # Applique CiliumNetworkPolicy L7 + mTLS required
 kubectl apply -f - <<'EOF'
@@ -129,8 +165,9 @@ EOF
 kubectl -n bendimu-sut-v1 rollout restart deployment/sut-v1
 kubectl -n bendimu-sut-v1 rollout status deployment/sut-v1 --timeout=180s
 
-# Vérif eBPF programs chargés
-cilium status --verbose | grep -A 3 "Encryption\|Authentication\|eBPF" > "$RESULTS_B/cilium-status.txt"
+# Vérif eBPF programs chargés (fix E20 : --verbose retiré CLI 0.16.x)
+cilium status > "$RESULTS_B/cilium-status.txt" || true
+kubectl -n kube-system get ds cilium -o jsonpath='{.status}' >> "$RESULTS_B/cilium-status.txt" 2>/dev/null || true
 
 # --- Idle 5 min (warmup post-install) ---
 echo ""
