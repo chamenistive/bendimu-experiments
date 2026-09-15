@@ -1,0 +1,5 @@
+sut-v1-577855959f-58wh5   istio-proxy   109m         32Mi            
+sut-v1-577855959f-jq44b   istio-proxy   113m         32Mi            
+sut-v1-577855959f-nqc8n   istio-proxy   113m         32Mi            
+sut-v1-577855959f-t5t4r   istio-proxy   115m         33Mi            
+sut-v1-577855959f-vxclk   istio-proxy   156m         33Mi            

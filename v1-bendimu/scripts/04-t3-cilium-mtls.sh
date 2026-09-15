@@ -25,6 +25,7 @@ cilium install --version "$V1_CILIUM_VERSION" \
   --set cluster.name="$CLUSTER_NAME_V1" \
   --set kubeProxyReplacement=true \
   --set socketLB.hostNamespaceOnly=true \
+  --set endpointRoutes.enabled=true \
   --set image.useDigest=false \
   --set operator.image.useDigest=false \
   --set mtu=1450 \

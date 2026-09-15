@@ -126,6 +126,7 @@ cilium install --version "${V1_CILIUM_VERSION}" \
   --set cluster.name="$CLUSTER_NAME_V1" \
   --set kubeProxyReplacement=true \
   --set socketLB.hostNamespaceOnly=true \
+  --set endpointRoutes.enabled=true \
   --set authentication.mutual.spire.enabled=true \
   --set authentication.mutual.spire.install.enabled=true \
   --set encryption.enabled=false
