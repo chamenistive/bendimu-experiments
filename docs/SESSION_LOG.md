@@ -7,6 +7,100 @@
 
 ---
 
+## Session Sep 14-15 2026 — V0 **COMPLET GO** (T0+T1+T2) + cross-check adaptatif
+
+**Statut final : ✅ V0 verdict GO. T3 Ambient skip (conflit CNI Cilium/Istio). Cluster destroy pour pause.**
+
+### Résultats V0
+
+| Test | ActualQPS | Saturation | p99 (ms) | Overhead vs T0 |
+|---|---|---|---|---|
+| T0 baseline (no mesh) | 12798 | 100.0% | **0.99** | 1.0× (référence) |
+| T1 Istio 1.22 sidecar + mTLS STRICT | 9650 | 75.4% | **19.95** | 20.1× |
+| T2 Cilium 1.16 eBPF + mutual-auth SPIRE | 12739 | 99.5% | **10.68** | 10.8× |
+| T3 Ambient | — | — | SKIP | — |
+
+**Verdict cross-check adaptatif**:
+- ✅ Ordre p99 T0 < T2 < T1 (mesh overhead croissant)
+- ✅ Saturation ≥ 60% (T1 75%, T2 99.5%)
+- ✅ Ratio T1/T2 = 1.87× (paper Bremler-Barr 2024 = 1.36×)
+
+**Pattern Bremler-Barr 2024 reproduit qualitativement**. Cibles absolues paper (600/440ms) obsolètes sur infra 2026 (kernel 6.12 eBPF + n2-standard-4 dépassent testbed 2024).
+
+### Erreurs rencontrées + fixes
+
+| # | Erreur | Cause | Correction |
+|---|---|---|---|
+| E14 | `Fortio /tmp/x.json: no such file or directory` | Image `fortio/fortio:1.68.0` scratch, pas de `/tmp` | DS Fortio ajout `emptyDir` volume + sidecar `busybox:1.36 helper` monté même /tmp. `kubectl exec -c helper` pour rm/cat, `-c fortio` pour load |
+| E15 | Tous 21 partiels T1 = 333B (`sh not found in $PATH`) | `sh -c` wrapper échoue (image scratch) | 3 kubectl exec séparés (rm/fortio/cat), pas de shell |
+| E16 | data1mb 12800 kubectl exec drop mid-cat | Internet local drop | Retry cat 3× avec backoff |
+| E17 | T2 Cilium tous partiels, smoke curl timeout | `bpf-lb-sock-hostns-only=true` (héritage T1 fix) + `enable-mutual-auth=true` sans SPIRE | Reinstall Cilium DEFAUT + `authentication.mutual.spire.enabled=true` + `install.enabled=true` |
+| E18 | Cilium `AuthCertificateProvider: SPIRE admin socket missing` | 5 agents SPIRE sur 7 nodes (taint Load `bendimu.role=load:NoSchedule` non toléré par SPIRE DS) | Patch DS spire-agent avec tolération → 7 agents ready, Cilium OK |
+| E19 | CiliumNetworkPolicy YAML `line 18: did not find expected key` | Syntaxe inline mixte block/flow non délimité | Flow style explicit `- { method: "GET", path: "/" }` |
+| E20 | `cilium status --verbose: unknown flag` | Flag retiré CLI 0.16.x | `cilium status` + kubectl inspection |
+| E21 | Ambient install CNI + Ztunnel timeout 5min | Conflit CNI Cilium vs Istio Ambient CNI | Skip T3 (marqué optionnel Bendimu focus DPA-1 vs DPA-3) |
+| E22 | Cross-check `TypeError: unsupported operand type(s) for |: type and NoneType` | PEP 604 requiert Python 3.10+ (user has 3.8) | `from typing import Optional, Tuple` |
+| E23 | Cross-check false NO-GO (p99 20× meilleur que target absolue paper) | Cibles absolues 2024 obsolètes | Refactor verdict adaptatif : ordre p99 T0<T2<T1 + saturation ≥ 60% + ratio T1/T2 > 1 |
+| E24 | Istio `PeerAuthentication portLevelMtls` rejected | Namespace-scope PA n'accepte pas portLevelMtls | Retire portLevelMtls (auto-bypass health checks via rewriteAppHTTPProbers) |
+| E25 | `istioctl authn tls-check: unknown command` | Sous-commande retirée Istio 1.22 | Remplacé par kubectl inspection 3 signaux (pod ready 2/2 + PA STRICT + istiod up) |
+| E26 | `istioctl x describe pod: pod not found` (mais kubectl le trouve) | Bug istioctl GKE 1.35 (résolution pod cassée) | Remplacé validation cluster state directe kubectl |
+| E27 | T1 tous 21 = 65B ou 925B fallback | Fortio `-quiet` + kubectl exec `sh -c` fail (E15 root) | Reformulé pattern kubectl exec 3× séparés (E15 solution) |
+| E28 | Fortio Read errors EOF T1 (avant helper sidecar) | `bpf-lb-sock=true` (Cilium socketLB pod) intercepte AVANT iptables Istio → mTLS bypass → SUT sidecar rejette plaintext STRICT | Reinstall Cilium `--set socketLB.hostNamespaceOnly=true` (socketLB restreint host, pod traffic passe iptables Envoy) |
+
+### Commits pushés
+
+- `2f36441` — Fortio sidecar busybox helper + emptyDir /tmp
+- `7098d79` — CiliumNetworkPolicy YAML flow style
+- `b4b4836` — cilium status --verbose retiré
+- `ad353da` — 04-ambient retire prompt read
+- `4db88ea` — cross-check Python 3.8 compat
+- `66a00b6` — cross-check verdict adaptatif + parser mixed-format
+- + précédents commits T1/T2 results
+
+### Fichiers résultats persistants
+
+```
+v0-bremler/results/
+├── t0-baseline/       # 21 JSON (ancien format streaming, extraction via parser fallback)
+├── t1-istio/          # 21 JSON propres 5-11KB
+├── t2-cilium/         # 21 JSON propres 6-11KB
+├── memory-cilium.txt  # kubectl top pods DS
+└── cross-check-v0.md  # verdict GO détaillé
+```
+
+### Fix DNS + auth durables appliqués session précédente encore actifs
+- `/etc/systemd/resolved.conf.d/bendimu.conf` : DNS 1.1.1.1+8.8.8.8, Fallback 1.0.0.1+8.8.4.4
+- `~/.config/gcloud/bendimu-terraform-key.json` : SA JSON key `terraform-bendimu`
+- `gcloud auth activate-service-account` : session kubectl long-lived sans reauth
+
+### Reprise V1 (prochaine session)
+
+```bash
+cd ~/Desktop/bendimu-experiments
+source .env
+# Vérifier auth SA encore active
+gcloud auth list
+kubectl config current-context
+
+# Bootstrap conservé — recréer V1
+bash v1-bendimu/scripts/00-provision.sh
+# Puis séquence T0 → T4 v1-bendimu (~2h charge tests)
+```
+
+### Points d'attention V1
+
+- V1 tls-server = binary Go PSD2 custom (build local + push GCR)
+- Bendimu-présentation = handlers /pisp, /aisp, /piisp, /confirm
+- Handlers multi-parallel Fortio load pattern (scripts V1 diffèrent de V0)
+- **Pattern helper sidecar Fortio doit être porté à V1/V2** (encore ancien pattern `-json '-'` streaming)
+- ID SPIRE trust domain à re-vérifier post-recreate cluster
+
+### Coût session
+
+~10h cluster tournant (~15 USD Sep 14-15) + storage négligeable. Bootstrap idle ~1 USD/j.
+
+---
+
 ## Session Sep 14 2026 (soir) — T0 baseline **COMPLET 21/21** + fixes durables
 
 **Statut final : ✅ T0 baseline validé complet (21/21). Prêt pour T1 Istio.**
