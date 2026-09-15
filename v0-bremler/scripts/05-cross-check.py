@@ -5,6 +5,7 @@ Exit 0 = GO (V1 autorisé). Exit 1 = NO-GO."""
 import json
 import pathlib
 import sys
+from typing import Optional, Tuple
 
 BASE = pathlib.Path(__file__).resolve().parents[1] / "results"
 TARGETS_P99_MS_DATA10KB = {
@@ -21,14 +22,14 @@ def load_json(path: pathlib.Path):
     except Exception as e:
         return {"error": str(e)}
 
-def p99_of(fortio_json: dict) -> float | None:
+def p99_of(fortio_json: dict) -> Optional[float]:
     """Extrait p99 (ms) d'un JSON Fortio load."""
     try:
         return fortio_json["DurationHistogram"]["Percentiles"][-1]["Value"] * 1000
     except (KeyError, IndexError, TypeError):
         return None
 
-def check_phase(phase: str, target_p99: float) -> tuple[bool, str]:
+def check_phase(phase: str, target_p99: float) -> Tuple[bool, str]:
     f = BASE / phase / "data10kb-12800rps.json"
     if not f.exists():
         return False, f"{phase}: résultat manquant ({f.name})"
