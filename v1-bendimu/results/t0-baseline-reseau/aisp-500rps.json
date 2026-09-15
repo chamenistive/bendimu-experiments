@@ -1,0 +1,375 @@
+{
+  "RunType": "HTTP",
+  "Labels": "sut-v1.bendimu-sut-v1.svc.cluster.local:8080/aisp/accounts , fortio-j696k",
+  "StartTime": "2026-09-15T12:40:37.852771031Z",
+  "RequestedQPS": "300",
+  "RequestedDuration": "2m0s",
+  "ActualQPS": 298.67210257723315,
+  "ActualDuration": 120426379597,
+  "NumThreads": 128,
+  "Version": "1.68.0",
+  "DurationHistogram": {
+    "Count": 35968,
+    "Min": 0.100235928,
+    "Max": 0.103616907,
+    "Sum": 3632.7646991719994,
+    "Avg": 0.10099990822875889,
+    "StdDev": 0.0003239279439962254,
+    "Data": [
+      {
+        "Start": 0.100235928,
+        "End": 0.103616907,
+        "Percent": 100,
+        "Count": 35968
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.10192637049887397
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.10277163874943698
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.10327879969977478
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.10358309626997747
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.10361352592699774
+      }
+    ]
+  },
+  "ErrorsDurationHistogram": {
+    "Count": 0,
+    "Min": 0,
+    "Max": 0,
+    "Sum": 0,
+    "Avg": 0,
+    "StdDev": 0,
+    "Data": null
+  },
+  "Exactly": 0,
+  "Jitter": true,
+  "Uniform": true,
+  "NoCatchUp": true,
+  "RunID": 0,
+  "AccessLoggerInfo": "",
+  "ID": "2026-09-15-124036_sut_v1_bendimu_sut_v1_svc_cluster_local_8080_aisp_accounts_fortio_j696k",
+  "RetCodes": {
+    "200": 35968
+  },
+  "IPCountMap": {
+    "34.118.225.210:8080": 128
+  },
+  "Insecure": false,
+  "MTLS": false,
+  "CACert": "",
+  "Cert": "",
+  "Key": "",
+  "UnixDomainSocket": "",
+  "URL": "http://sut-v1.bendimu-sut-v1.svc.cluster.local:8080/aisp/accounts",
+  "NumConnections": 1,
+  "Compression": false,
+  "DisableFastClient": false,
+  "HTTP10": false,
+  "H2": false,
+  "DisableKeepAlive": false,
+  "AllowHalfClose": false,
+  "FollowRedirects": false,
+  "Resolve": "",
+  "HTTPReqTimeOut": 3000000000,
+  "UserCredentials": "",
+  "ContentType": "",
+  "Payload": "",
+  "MethodOverride": "",
+  "LogErrors": true,
+  "SequentialWarmup": false,
+  "ConnReuseRange": [
+    0,
+    0
+  ],
+  "NoResolveEachConn": false,
+  "Offset": 0,
+  "Resolution": 0.001,
+  "Sizes": {
+    "Count": 35968,
+    "Min": 328,
+    "Max": 328,
+    "Sum": 11797504,
+    "Avg": 328,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 328,
+        "End": 328,
+        "Percent": 100,
+        "Count": 35968
+      }
+    ]
+  },
+  "HeaderSizes": {
+    "Count": 35968,
+    "Min": 109,
+    "Max": 109,
+    "Sum": 3920512,
+    "Avg": 109,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 109,
+        "End": 109,
+        "Percent": 100,
+        "Count": 35968
+      }
+    ]
+  },
+  "Sockets": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "SocketCount": 128,
+  "ConnectionStats": {
+    "Count": 128,
+    "Min": 0.000212886,
+    "Max": 0.012951492,
+    "Sum": 0.7221156199999998,
+    "Avg": 0.005641528281249999,
+    "StdDev": 0.004380449734309552,
+    "Data": [
+      {
+        "Start": 0.000212886,
+        "End": 0.001,
+        "Percent": 15.625,
+        "Count": 20
+      },
+      {
+        "Start": 0.001,
+        "End": 0.002,
+        "Percent": 31.25,
+        "Count": 20
+      },
+      {
+        "Start": 0.002,
+        "End": 0.003,
+        "Percent": 48.4375,
+        "Count": 22
+      },
+      {
+        "Start": 0.003,
+        "End": 0.004,
+        "Percent": 49.21875,
+        "Count": 1
+      },
+      {
+        "Start": 0.004,
+        "End": 0.005,
+        "Percent": 50,
+        "Count": 1
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 51.5625,
+        "Count": 2
+      },
+      {
+        "Start": 0.006,
+        "End": 0.007,
+        "Percent": 57.8125,
+        "Count": 8
+      },
+      {
+        "Start": 0.007,
+        "End": 0.008,
+        "Percent": 65.625,
+        "Count": 10
+      },
+      {
+        "Start": 0.008,
+        "End": 0.009000000000000001,
+        "Percent": 71.875,
+        "Count": 8
+      },
+      {
+        "Start": 0.009000000000000001,
+        "End": 0.01,
+        "Percent": 72.65625,
+        "Count": 1
+      },
+      {
+        "Start": 0.01,
+        "End": 0.011,
+        "Percent": 83.59375,
+        "Count": 14
+      },
+      {
+        "Start": 0.011,
+        "End": 0.012,
+        "Percent": 90.625,
+        "Count": 9
+      },
+      {
+        "Start": 0.012,
+        "End": 0.012951492,
+        "Percent": 100,
+        "Count": 12
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.005
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.010214285714285714
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.011911111111111112
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.01284999952
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.012941342752
+      }
+    ]
+  },
+  "AbortOn": 0
+}
