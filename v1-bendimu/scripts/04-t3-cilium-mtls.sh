@@ -37,15 +37,24 @@ cilium install --version "$V1_CILIUM_VERSION" \
   --set operator.prometheus.enabled=true \
   --set authentication.mutual.spire.enabled=true \
   --set authentication.mutual.spire.install.enabled=true
-cilium status --wait --wait-duration 5m
 
-# Fix E18 : patcher DS spire-agent avec tolération pool load
+# Attendre que Cilium install crée spire-agent DS avant patch (fix ordre E18)
+echo "  Attente création spire-agent DS..."
+for i in $(seq 1 30); do
+  kubectl -n cilium-spire get daemonset spire-agent >/dev/null 2>&1 && break
+  sleep 5
+done
+
+# Fix E18 : patcher DS spire-agent avec tolération pool load AVANT cilium status --wait
+# (sans ce patch, 2 cilium-agents load nodes fail SPIRE → cilium status timeout)
 kubectl -n cilium-spire patch daemonset spire-agent --type=json -p='[
   {"op":"add","path":"/spec/template/spec/tolerations","value":[
     {"key":"bendimu.role","operator":"Equal","value":"load","effect":"NoSchedule"}
   ]}
-]' 2>/dev/null || echo "  (spire-agent DS tolérations déjà présentes ou ns différent)"
+]' 2>/dev/null || echo "  (spire-agent DS tolérations déjà présentes)"
 kubectl -n cilium-spire rollout status daemonset/spire-agent --timeout=180s 2>/dev/null || true
+
+cilium status --wait --wait-duration 5m
 
 # 3. CiliumNetworkPolicy L7 PSD2 + auth (fix E19 : flow style explicit)
 cat <<'EOF' | kubectl apply -f -

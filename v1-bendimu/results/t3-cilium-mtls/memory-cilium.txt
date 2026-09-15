@@ -1,0 +1,8 @@
+cilium-4znr5   122m   129Mi   
+cilium-5r2kh   59m    123Mi   
+cilium-dlgk9   12m    122Mi   
+cilium-jcw8r   8m     88Mi    
+cilium-mghf5   14m    95Mi    
+cilium-n4xqv   92m    125Mi   
+cilium-rhccj   40m    125Mi   
+cilium-z4l4f   80m    128Mi   
