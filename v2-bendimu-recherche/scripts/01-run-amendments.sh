@@ -121,15 +121,52 @@ amend_03_ambient() {
 }
 
 amend_04_audit_mtls() {
-  banner "04-audit-mtls" "Audit croisé mTLS (OBP + istioctl authn tls-check + cilium hubble)"
+  banner "04-audit-mtls" "Audit croisé mTLS (kubectl cluster state + cilium hubble + OBP)"
   local RESULTS="$SCRIPT_DIR/../amendments/04-audit-mtls/results"
   mkdir -p "$RESULTS"
-  istioctl authn tls-check \
-    "$(kubectl -n bendimu-sut-v1 get pod -l app=sut-v1 -o jsonpath='{.items[0].metadata.name}')" \
-    sut-v1.bendimu-sut-v1.svc.cluster.local > "$RESULTS/istio-tls-check.txt" 2>&1 || true
-  cilium hubble observe --last 100 --output json > "$RESULTS/cilium-hubble.json" 2>&1 || true
-  # Audit OBP délégué au script dédié
-  "$SCRIPT_DIR/03-audit-obp.sh" || true
+
+  # Signal 1 : validation Istio mTLS STRICT via kubectl (fix E25 : istioctl authn tls-check retiré Istio 1.22+)
+  # 3 signaux cluster-state : pod sidecar ready 2/2 + PeerAuthentication STRICT + istiod up
+  local SUT_POD
+  SUT_POD=$(kubectl -n bendimu-sut-v1 get pod -l app=sut-v1 -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
+  {
+    echo "=== Istio mTLS Audit (kubectl cluster state) ==="
+    echo "SUT pod: ${SUT_POD:-<none>}"
+    echo
+    echo "--- Sidecar readiness (attendu: true true) ---"
+    kubectl -n bendimu-sut-v1 get pod "$SUT_POD" -o jsonpath='{.status.containerStatuses[*].ready}' 2>&1
+    echo
+    echo "--- PeerAuthentication mode (attendu: STRICT) ---"
+    kubectl -n bendimu-sut-v1 get peerauthentication -o jsonpath='{.items[*].spec.mtls.mode}' 2>&1
+    echo
+    echo "--- istiod readyReplicas ---"
+    kubectl -n istio-system get deploy istiod -o jsonpath='{.status.readyReplicas}' 2>&1
+    echo
+  } > "$RESULTS/istio-mtls-audit.txt" 2>&1 || true
+
+  # Signal 2 : cilium hubble flows (fix E46 : `cilium hubble observe` retiré CLI 0.16.x,
+  # appeler hubble CLI intégré dans pod cilium-agent via kubectl exec)
+  local CILIUM_POD
+  CILIUM_POD=$(kubectl -n kube-system get pod -l k8s-app=cilium -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+  kubectl -n kube-system exec "$CILIUM_POD" -c cilium-agent -- \
+    hubble observe --last 100 --output json > "$RESULTS/cilium-hubble.json" 2>&1 || true
+
+  # Signal 3 : OBP audit (best-effort, URL Berlin Group souvent 404)
+  "$SCRIPT_DIR/03-audit-obp.sh" > "$RESULTS/obp-audit.log" 2>&1 || echo "OBP audit skip (URL unreachable)" > "$RESULTS/obp-audit.log"
+
+  # Summary
+  {
+    echo "# A04 Audit mTLS — Summary"
+    echo
+    echo "## Signal 1 : Istio mTLS STRICT (kubectl)"
+    grep -q "true true" "$RESULTS/istio-mtls-audit.txt" && echo "- sidecar ready 2/2 : ✅" || echo "- sidecar ready 2/2 : ❌"
+    grep -q "STRICT" "$RESULTS/istio-mtls-audit.txt" && echo "- PA STRICT : ✅" || echo "- PA STRICT : ❌"
+    echo "## Signal 2 : Cilium Hubble flows"
+    [[ -s "$RESULTS/cilium-hubble.json" ]] && wc -l < "$RESULTS/cilium-hubble.json" | xargs echo "- lignes JSON :" || echo "- Hubble output vide : ❌"
+    echo "## Signal 3 : OBP audit sémantique"
+    [[ -s "$RESULTS/obp-audit.log" ]] && head -3 "$RESULTS/obp-audit.log" || echo "- absent"
+  } > "$RESULTS/summary.md"
+
   git tag -f v2-a04-ok
 }
 

@@ -42,6 +42,7 @@
 | E43 | `~/.config/gcloud/bendimu-terraform-key.json` : `No such file or directory` avec tilde | Shell tilde expansion inconsistant selon contexte | Path absolu `/home/stivax/.config/gcloud/bendimu-terraform-key.json` |
 | E44 | Terraform pm_envoy/pm_cilium_agent `cannot get OpenAPI foundry: context deadline exceeded` | API server GKE stress + CRDs GMP timing | Retry `terraform apply` après stabilisation control plane |
 | E45 | A05 Jaeger operator webhook manque `cert-manager` CRDs (Certificate, Issuer) | Chart Jaeger dépend cert-manager | `kubectl apply -f cert-manager/latest/cert-manager.yaml` avant amend_05 |
+| E46 | A04 `cilium hubble observe` : `unknown command` puis `unknown flag: --last/--number` | Cilium CLI 0.16.x retire `hubble observe` (moved to standalone `hubble` binary) | `kubectl -n kube-system exec ds/cilium -c cilium-agent -- hubble observe --last 100 --output json` (utilise binaire intégré pod agent) |
 
 ### Points d'attention V2
 

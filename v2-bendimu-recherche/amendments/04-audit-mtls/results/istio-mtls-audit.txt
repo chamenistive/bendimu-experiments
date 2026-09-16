@@ -1,0 +1,9 @@
+=== Istio mTLS Audit (kubectl cluster state) ===
+SUT pod: sut-v1-566986c8ff-4d8pv
+
+--- Sidecar readiness (attendu: true true) ---
+true
+--- PeerAuthentication mode (attendu: STRICT) ---
+
+--- istiod readyReplicas ---
+1

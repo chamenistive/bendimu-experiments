@@ -1,0 +1,3 @@
+==> V2 audit sémantique OBP-API
+curl: (22) The requested URL returned error: 404 
+⚠️  Spec OBP indisponible, fallback : audit manuel.
