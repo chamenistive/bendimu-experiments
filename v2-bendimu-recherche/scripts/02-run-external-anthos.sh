@@ -28,8 +28,9 @@ cat <<EOF | kubectl apply -f -
 apiVersion: security.istio.io/v1
 kind: PeerAuthentication
 metadata: { name: default, namespace: ${BOA_NAMESPACE:-boa} }
-spec: { mtls: { mode: STRICT }, portLevelMtls: { "15021": { mode: PERMISSIVE } } }
+spec: { mtls: { mode: STRICT } }
 EOF
+# fix V1 E24 : portLevelMtls invalide en namespace-scope PA
 
 sleep 30
 echo "→ Anthos Istio run"

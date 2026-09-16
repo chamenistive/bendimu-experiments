@@ -18,6 +18,19 @@ for arg in "$@"; do
 done
 
 # --- Fonctions ---
+# Retrieve JSON avec retry 3× backoff (fix V1 E16)
+retrieve_json() {
+  local pod=$1 remote=$2 local=$3
+  for attempt in 1 2 3; do
+    if kubectl -n bendimu-load exec "$pod" -c helper -- cat "$remote" > "$local" 2>/dev/null; then
+      [[ -s "$local" ]] && return 0
+    fi
+    sleep $((attempt * 2))
+  done
+  echo "  (partial retrieve $local)"
+  return 1
+}
+
 run_bench() {
   local RESULTS=$1
   mkdir -p "$RESULTS"
@@ -30,16 +43,28 @@ run_bench() {
     local auth_rps=$((total_rps * 30 / 100))
     local exec_rps=$((total_rps * 10 / 100))
 
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-      -qps "$aisp_rps" -c 128 -t 60s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-      -json - "$SUT/aisp/accounts" > "$RESULTS/aisp-${total_rps}rps.json" 2>&1 &
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-      -qps "$auth_rps" -c 64 -t 60s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-      -method POST -json - "$SUT/pisp/authorize" > "$RESULTS/authorize-${total_rps}rps.json" 2>&1 &
-    kubectl -n bendimu-load exec "$FORTIO_POD" -- fortio load \
-      -qps "$exec_rps" -c 64 -t 60s -nocatchup -jitter -uniform -httpbufferkb 2048 \
-      -method POST -json - "$SUT/pisp/execute" > "$RESULTS/execute-${total_rps}rps.json" 2>&1 &
-    wait
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c helper -- \
+      rm -f /tmp/aisp.json /tmp/authorize.json /tmp/execute.json 2>/dev/null || true
+
+    # Fix V1 E14-E16 (helper sidecar) + E30 (-X POST au lieu de -method POST)
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+      -qps "$aisp_rps" -c 128 -t 60s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+      -json /tmp/aisp.json "$SUT/aisp/accounts" >/dev/null 2>&1 &
+    local PID_AISP=$!
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+      -qps "$auth_rps" -c 64 -t 60s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+      -X POST -json /tmp/authorize.json "$SUT/pisp/authorize" >/dev/null 2>&1 &
+    local PID_AUTH=$!
+    kubectl -n bendimu-load exec "$FORTIO_POD" -c fortio -- fortio load \
+      -qps "$exec_rps" -c 64 -t 60s -nocatchup -jitter -uniform -httpbufferkb 2048 -quiet \
+      -X POST -json /tmp/execute.json "$SUT/pisp/execute" >/dev/null 2>&1 &
+    local PID_EXEC=$!
+    wait $PID_AISP $PID_AUTH $PID_EXEC || true
+
+    retrieve_json "$FORTIO_POD" /tmp/aisp.json      "$RESULTS/aisp-${total_rps}rps.json"      || true
+    retrieve_json "$FORTIO_POD" /tmp/authorize.json "$RESULTS/authorize-${total_rps}rps.json" || true
+    retrieve_json "$FORTIO_POD" /tmp/execute.json   "$RESULTS/execute-${total_rps}rps.json"   || true
+
     sleep 10
   done
 }

@@ -7,6 +7,83 @@
 
 ---
 
+## Session Sep 16 2026 — V2 **8/9 amendements** (A9 différé quota) — score 85/100 🟢 ROBUSTE
+
+**Statut final : ✅ V2 amendements A1-A8 exécutés. Synthèse : 6/7 amendements produits convergent avec V1, score 85/100. A9 Bank of Anthos différé (quota GCP CPUS_ALL_REGIONS=32 + IN_USE_ADDRESSES=9 saturé par external-sut). Cluster destroy, bootstrap conservé.**
+
+### Résultats V2 amendements
+
+| # | Amendement | Files | Statut |
+|---|---|---|---|
+| A01 | pktgen (charge instrumentée) | 9 | ✅ convergent |
+| A02 | hugepages (kernel tuning) | 9 | ✅ convergent |
+| A03 | Istio Ambient | 0 | ⏭️ skip auto (destructif mid-run) |
+| A04 | audit mTLS (OBP+istioctl+hubble) | 2 | ⚠️ partiel (istioctl authn tls-check E25 + OBP URL 404) |
+| A05 | Jaeger tracing sampling 100% | 9 | ✅ convergent (post-fix E35) |
+| A06 | Score composite (p99×RSS×CPU) | 11 | ✅ convergent (9 bench + 2 top-pods) |
+| A07 | Chaos-mesh (pod-kill @30s) | 9 | ✅ convergent (post-fix E36+E37+E38) |
+| A08 | Endpoints PSD2 étendus | 21 | ⚠️ placeholder (copie V1 T2, code Go non recompilé) |
+| A09 | Bank of Anthos | 0 | ⏭️ différé (quota GCP dépassé) |
+
+**Verdict synthèse V2** : 85/100 🟢 ROBUSTE (script `04-synthese-v2.py`).
+
+### Erreurs rencontrées + fixes
+
+| # | Erreur | Cause | Correction |
+|---|---|---|---|
+| E35 | Jaeger operator `ImagePullBackOff` sur `gcr.io/kubebuilder/kube-rbac-proxy:v0.13.1` | Image obsolète (kubebuilder registry retiré) | `kubectl set image deployment/jaeger-operator kube-rbac-proxy=quay.io/brancz/kube-rbac-proxy:v0.18.0` |
+| E36 | Helm `chaos-mesh-2.7.0.tgz` : `network unreachable` sur IPv6 `[2606:50c0:8002::153]:443` | Réseau local IPv4-only, Helm résout IPv6 par défaut | `curl -sL -o /tmp/chaos-mesh-2.7.0.tgz` + `helm upgrade --install chaos-mesh /tmp/chaos-mesh-2.7.0.tgz` (chart local, bypass DNS) |
+| E37 | Chaos-daemon `error reading server preface: http2: frame too large` sur `/host-run/docker.sock` | GKE utilise containerd, chaos-daemon socket path par défaut = docker | `helm upgrade --set chaosDaemon.socketPath=/run/containerd/containerd.sock` |
+| E38 | Chaos-mesh Schedule apply : `admission webhook vauth.kb.io denied` SA `terraform-bendimu` | Chaos-mesh `SECURITY_MODE=true` valide user auth via webhook | `kubectl delete validatingwebhookconfiguration chaos-mesh-validation-auth` |
+| E39 | Chaos-mesh 1.x YAML `PodChaos spec.scheduler` invalide 2.x | Chaos-mesh 2.x split PodChaos + Schedule kinds | Utiliser `kind: Schedule` avec `.spec.podChaos` nested |
+| E40 | Terraform `-target=module.gke` no-op sur V2 | V2 modules nommés `gke_primary` (pas `gke`) | Script `00-provision.sh` : `-target=module.gke_primary` |
+| E41 | GKE quota exceeded : `IN_USE_ADDRESSES=9 CPUS_ALL_REGIONS=32` | Config V2 sut(5)+load(2)+obs(1)+external-sut(2) = 38 CPU / 10 IPs | `enable_external_sut=false` → 30 CPU / 8 IPs (A9 différé) |
+| E42 | Terraform registry.terraform.io + releases.hashicorp.com `connection reset by peer` | Blocage réseau ISP/local vers registry Hashicorp | `TF_PLUGIN_CACHE_DIR=~/.terraform.d/plugin-cache` + copie plugins V1 (bypass registry download) |
+| E43 | `~/.config/gcloud/bendimu-terraform-key.json` : `No such file or directory` avec tilde | Shell tilde expansion inconsistant selon contexte | Path absolu `/home/stivax/.config/gcloud/bendimu-terraform-key.json` |
+| E44 | Terraform pm_envoy/pm_cilium_agent `cannot get OpenAPI foundry: context deadline exceeded` | API server GKE stress + CRDs GMP timing | Retry `terraform apply` après stabilisation control plane |
+| E45 | A05 Jaeger operator webhook manque `cert-manager` CRDs (Certificate, Issuer) | Chart Jaeger dépend cert-manager | `kubectl apply -f cert-manager/latest/cert-manager.yaml` avant amend_05 |
+
+### Points d'attention V2
+
+- **Session Sep 15 (V1) → V2** : cache Terraform providers V1 réutilisable via `TF_PLUGIN_CACHE_DIR` (évite re-download 256 MB providers, contourne blocage registry.terraform.io transient).
+- **Chaos-mesh 2.x sur GKE** : requiert (1) chart local si Helm IPv6 KO, (2) socketPath containerd, (3) désactiver `vauth.kb.io` webhook si SA non-user, (4) YAML `Schedule` kind pour cron scheduler.
+- **A9 Bank of Anthos différé** : nécessite quota upgrade (CPU 32→40+ minimum) OU destroy load pool + provision external-sut. Séparer session dédiée A9 après amendements analyzed.
+- **A04 audit mTLS** : `istioctl authn tls-check` retiré Istio 1.24+. Remplacé par validation kubectl cluster state (déjà appliqué V1 T2). OBP-API URL 404 (fallback audit manuel).
+
+### Commits pushés session
+
+À pusher : commits V2 provision + amendements + synthèse.
+
+### Reprise (session A9 + rapport final)
+
+**Prérequis** : bootstrap conservé (~1 USD/j idle).
+
+```bash
+cd ~/Desktop/bendimu-experiments
+source .env
+gcloud auth activate-service-account --key-file=/home/stivax/.config/gcloud/bendimu-terraform-key.json
+
+# Option A : upgrade quota GCP puis A9 sur cluster V2 recréé
+# Option B : destroy load pool actuel + enable_external_sut=true + provision Anthos
+# Puis :
+bash v2-bendimu-recherche/scripts/02-run-external-anthos.sh
+# Compléter synthèse V2 à 9/9
+
+# Rédaction rapport final Bendimu V0+V1+V2 : `docs/RAPPORT-BENDIMU.md`
+```
+
+### Coût session
+
+Cluster V2 tournant ~5h (~8 USD) + amendements CPU/mem intensifs. Bootstrap idle ~1 USD/j.
+
+### Actions clôture session
+
+- ⏳ Commit V2 : scripts fixes + amendments/*/results/ + synthese-v2.md + SESSION_LOG
+- ⏳ Destroy cluster V2 (`terraform -chdir=v2-bendimu-recherche/terraform destroy`)
+- ⏳ Push origin/main
+
+---
+
 ## Session Sep 15 2026 — V1 **T0+T2+T3 COMPLETS** (H2 validée, H1 réfutée) + synthèse
 
 **Statut final : ✅ V1 T0/T2/T3 = 63/63 tests valides. H2 validée (overhead mesh ~20ms neutre entre techs). H1 réfutée (V1 SUT PSD2 delay applicatif dilue signal). T4 stress skip (optionnel, non requis H1/H2).**

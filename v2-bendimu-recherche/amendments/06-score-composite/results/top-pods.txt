@@ -1,0 +1,6 @@
+POD                       NAME   CPU(cores)   MEMORY(bytes)   
+sut-v1-566986c8ff-2h8j2   sut    75m          7Mi             
+sut-v1-566986c8ff-5x575   sut    76m          7Mi             
+sut-v1-566986c8ff-glldl   sut    83m          8Mi             
+sut-v1-566986c8ff-gnjm6   sut    80m          8Mi             
+sut-v1-566986c8ff-m557t   sut    44m          7Mi             

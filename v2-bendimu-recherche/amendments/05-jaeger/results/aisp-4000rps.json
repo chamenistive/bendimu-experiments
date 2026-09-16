@@ -1,0 +1,333 @@
+{
+  "RunType": "HTTP",
+  "Labels": "sut-v1.bendimu-sut-v1.svc.cluster.local:8080/aisp/accounts , fortio-4ggqr",
+  "StartTime": "2026-09-16T19:23:58.279025717Z",
+  "RequestedQPS": "2400",
+  "RequestedDuration": "1m0s",
+  "ActualQPS": 1197.9507532576267,
+  "ActualDuration": 60154392661,
+  "NumThreads": 128,
+  "Version": "1.68.0",
+  "DurationHistogram": {
+    "Count": 72062,
+    "Min": 0.100184442,
+    "Max": 0.106480236,
+    "Sum": 7264.1064395719995,
+    "Avg": 0.10080356414715105,
+    "StdDev": 0.00031317565223087544,
+    "Data": [
+      {
+        "Start": 0.100184442,
+        "End": 0.106480236,
+        "Percent": 100,
+        "Count": 72062
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.10333229531621821
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.10490626565810911
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.10585064786324365
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.10641727718632436
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.10647394011863244
+      }
+    ]
+  },
+  "ErrorsDurationHistogram": {
+    "Count": 0,
+    "Min": 0,
+    "Max": 0,
+    "Sum": 0,
+    "Avg": 0,
+    "StdDev": 0,
+    "Data": null
+  },
+  "Exactly": 0,
+  "Jitter": true,
+  "Uniform": true,
+  "NoCatchUp": true,
+  "RunID": 0,
+  "AccessLoggerInfo": "",
+  "ID": "2026-09-16-192357_sut_v1_bendimu_sut_v1_svc_cluster_local_8080_aisp_accounts_fortio_4ggqr",
+  "RetCodes": {
+    "200": 72062
+  },
+  "IPCountMap": {
+    "34.118.232.161:8080": 128
+  },
+  "Insecure": false,
+  "MTLS": false,
+  "CACert": "",
+  "Cert": "",
+  "Key": "",
+  "UnixDomainSocket": "",
+  "URL": "http://sut-v1.bendimu-sut-v1.svc.cluster.local:8080/aisp/accounts",
+  "NumConnections": 1,
+  "Compression": false,
+  "DisableFastClient": false,
+  "HTTP10": false,
+  "H2": false,
+  "DisableKeepAlive": false,
+  "AllowHalfClose": false,
+  "FollowRedirects": false,
+  "Resolve": "",
+  "HTTPReqTimeOut": 3000000000,
+  "UserCredentials": "",
+  "ContentType": "",
+  "Payload": "",
+  "MethodOverride": "",
+  "LogErrors": true,
+  "SequentialWarmup": false,
+  "ConnReuseRange": [
+    0,
+    0
+  ],
+  "NoResolveEachConn": false,
+  "Offset": 0,
+  "Resolution": 0.001,
+  "Sizes": {
+    "Count": 72062,
+    "Min": 328,
+    "Max": 328,
+    "Sum": 23636336,
+    "Avg": 328,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 328,
+        "End": 328,
+        "Percent": 100,
+        "Count": 72062
+      }
+    ]
+  },
+  "HeaderSizes": {
+    "Count": 72062,
+    "Min": 109,
+    "Max": 109,
+    "Sum": 7854758,
+    "Avg": 109,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 109,
+        "End": 109,
+        "Percent": 100,
+        "Count": 72062
+      }
+    ]
+  },
+  "Sockets": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "SocketCount": 128,
+  "ConnectionStats": {
+    "Count": 128,
+    "Min": 0.000179351,
+    "Max": 0.006921605,
+    "Sum": 0.22742376899999991,
+    "Avg": 0.0017767481953124993,
+    "StdDev": 0.0012928756881975356,
+    "Data": [
+      {
+        "Start": 0.000179351,
+        "End": 0.001,
+        "Percent": 29.6875,
+        "Count": 38
+      },
+      {
+        "Start": 0.001,
+        "End": 0.002,
+        "Percent": 63.28125,
+        "Count": 43
+      },
+      {
+        "Start": 0.002,
+        "End": 0.003,
+        "Percent": 88.28125,
+        "Count": 32
+      },
+      {
+        "Start": 0.003,
+        "End": 0.004,
+        "Percent": 95.3125,
+        "Count": 9
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 97.65625,
+        "Count": 3
+      },
+      {
+        "Start": 0.006,
+        "End": 0.006921605,
+        "Percent": 100,
+        "Count": 3
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.0016046511627906977
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.00246875
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.0032444444444444443
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.006528386866666667
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.0068822831866666686
+      }
+    ]
+  },
+  "AbortOn": 0
+}

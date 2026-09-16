@@ -1,0 +1,9 @@
+NAME           CPU(cores)   MEMORY(bytes)   
+cilium-7tddh   14m          191Mi           
+cilium-bhgxp   12m          212Mi           
+cilium-dbwj9   11m          213Mi           
+cilium-fndw4   13m          206Mi           
+cilium-jmbgf   24m          214Mi           
+cilium-jr7lr   11m          173Mi           
+cilium-s54qc   13m          208Mi           
+cilium-w6hnt   16m          215Mi           

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """V2 synthèse — convergence 9 amendements + triangulation Anthos/OBP."""
+from __future__ import annotations
 
 import json
 import pathlib
